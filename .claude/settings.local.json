@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(file:*)",
+      "Bash(find:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(psql:*)",
+      "Bash(while read file)",
+      "Bash(do sed -i.bak 's/bg-primary-darkAlt/bg-white/g' \"$file\" sed -i.bak 's/bg-primary-dark/bg-primary-light-alt/g' \"$file\" sed -i.bak 's/hover:bg-primary-dark/hover:bg-primary-light-alt/g' \"$file\" sed -i.bak 's/hover:text-accent-blue/hover:text-accent-teal-dark/g' \"$file\" sed -i.bak 's/text-primary-dark/text-white/g' \"$file\" rm \"$file.bak\" done)",
+      "Bash(grep:*)",
+      "Bash(timeout 15 npm run dev:*)"
+    ]
+  }
+}

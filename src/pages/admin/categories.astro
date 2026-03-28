@@ -1,0 +1,10 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminCategoriesClient from '../../components/admin/AdminCategoriesClient.vue';
+---
+
+<AdminLayout title="Manage Categories" description="Manage book categories in Cook Book Bake">
+  <AdminCategoriesClient client:load />
+</AdminLayout>

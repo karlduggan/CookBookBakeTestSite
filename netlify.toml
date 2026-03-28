@@ -1,0 +1,40 @@
+[build]
+command = "npm run build"
+publish = "dist"
+functions = "netlify/functions"
+
+[env]
+# Environment variables to be set in production
+
+[[redirects]]
+from = "/*"
+to = "/"
+status = 200
+
+# API routes - ensure they hit Netlify Functions
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api/:splat"
+status = 200
+
+[functions]
+node_bundler = "esbuild"
+external_node_modules = ["bcryptjs", "stripe", "dotenv", "jsonwebtoken"]
+
+[[headers]]
+for = "/*"
+[headers.values]
+  X-Content-Type-Options = "nosniff"
+  X-Frame-Options = "DENY"
+  X-XSS-Protection = "1; mode=block"
+  Referrer-Policy = "no-referrer-when-downgrade"
+
+[[headers]]
+for = "/fonts/*"
+[headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/images/*"
+[headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"

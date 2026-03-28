@@ -1,0 +1,31 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AdminSidebar from '../components/admin/AdminSidebar.vue';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Admin Dashboard', description = 'Cook Book Bake Admin Panel' } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="flex h-screen bg-primary-light">
+    <!-- Sidebar -->
+    <AdminSidebar client:load />
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <div class="container mx-auto px-4 py-8">
+        <slot />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  :global(body) {
+    overflow: hidden;
+  }
+</style>

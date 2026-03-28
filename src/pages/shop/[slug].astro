@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BookDetailClient from '../../components/shop/BookDetailClient.vue';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+// Fetch book data from API
+let bookData: any = null;
+let error = null;
+
+try {
+  const response = await fetch(`${process.env.PUBLIC_SITE_URL || 'http://localhost:3000'}/api/book?id=${slug}`);
+  const data = await response.json();
+
+  if (data.success) {
+    bookData = data.data.book;
+  } else {
+    error = data.error || 'Book not found';
+  }
+} catch (err) {
+  error = 'Failed to load book';
+  console.error('Failed to fetch book:', err);
+}
+
+// If book not found, return 404
+if (error || !bookData) {
+  return Astro.response.status = 404;
+}
+
+const stockStatus = bookData.stock_quantity > 5 ? 'in-stock' : bookData.stock_quantity > 0 ? 'low-stock' : 'out-of-stock';
+---
+
+<BaseLayout title={bookData.title} description={bookData.description || ''}>
+  <div class="container mx-auto px-4 py-12">
+    <!-- Back link -->
+    <a href="/shop" class="inline-flex items-center text-accent-teal hover:text-accent-blue mb-8 transition-colors">
+      <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      Back to Shop
+    </a>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Book Image -->
+      <div class="md:col-span-1">
+        <div class="bg-primary-darkAlt rounded-lg overflow-hidden aspect-[2/3] sticky top-24">
+          {bookData.cover_image_url ? (
+            <img
+              src={bookData.cover_image_url}
+              alt={bookData.title}
+              class="w-full h-full object-cover"
+            />
+          ) : (
+            <div class="w-full h-full flex items-center justify-center text-text-muted">
+              <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        <!-- Add to Cart Button - Client Component -->
+        <BookDetailClient
+          client:load
+          bookId={bookData.id}
+          title={bookData.title}
+          author={bookData.author}
+          price={bookData.price}
+          coverImageUrl={bookData.cover_image_url || ''}
+          stockQuantity={bookData.stock_quantity}
+          inStock={bookData.stock_quantity > 0}
+        />
+      </div>
+
+      <!-- Book Details -->
+      <div class="md:col-span-2">
+        <!-- Title and Author -->
+        <div class="mb-6">
+          <h1 class="text-4xl font-bold text-accent-teal mb-2">
+            {bookData.title}
+          </h1>
+          <p class="text-xl text-text-secondary mb-4">
+            by <span class="font-semibold">{bookData.author}</span>
+          </p>
+
+          <!-- Category Badge -->
+          {bookData.categories && (
+            <div class="mb-4">
+              <a
+                href={`/shop?category=${bookData.categories.slug}`}
+                class="inline-block bg-primary-darkAlt text-accent-teal px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors text-sm font-semibold"
+              >
+                {bookData.categories.name}
+              </a>
+            </div>
+          )}
+
+          <!-- Badges -->
+          <div class="flex gap-2 mb-4">
+            {bookData.featured && (
+              <span class="bg-accent-teal text-primary-dark text-xs font-bold px-3 py-1 rounded">
+                Featured
+              </span>
+            )}
+            {bookData.bestseller && (
+              <span class="bg-accent-blue text-white text-xs font-bold px-3 py-1 rounded">
+                Bestseller
+              </span>
+            )}
+          </div>
+        </div>
+
+        <!-- Price and Stock -->
+        <div class="border-t border-b border-text-muted py-6 mb-6">
+          <div class="flex items-baseline gap-4 mb-4">
+            <div class="text-4xl font-bold text-accent-teal">
+              £{bookData.price.toFixed(2)}
+            </div>
+            <div class="text-lg text-text-secondary">
+              {stockStatus === 'in-stock' && (
+                <span class="text-accent-teal font-semibold">In Stock</span>
+              )}
+              {stockStatus === 'low-stock' && (
+                <span class="text-yellow-500 font-semibold">Low Stock ({bookData.stock_quantity})</span>
+              )}
+              {stockStatus === 'out-of-stock' && (
+                <span class="text-red-500 font-semibold">Out of Stock</span>
+              )}
+            </div>
+          </div>
+
+          <!-- ISBN -->
+          {bookData.isbn && (
+            <div class="text-sm text-text-secondary">
+              <strong>ISBN:</strong> {bookData.isbn}
+            </div>
+          )}
+        </div>
+
+        <!-- Description -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-accent-teal mb-4">About This Book</h2>
+          <p class="text-text-secondary leading-relaxed">
+            {bookData.description}
+          </p>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="bg-primary-darkAlt rounded-lg p-6 border border-text-muted">
+          <h3 class="text-lg font-bold text-accent-teal mb-4">Product Details</h3>
+          <dl class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-text-secondary">Title</dt>
+              <dd class="font-semibold">{bookData.title}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-text-secondary">Author</dt>
+              <dd class="font-semibold">{bookData.author}</dd>
+            </div>
+            {bookData.isbn && (
+              <div class="flex justify-between">
+                <dt class="text-text-secondary">ISBN</dt>
+                <dd class="font-semibold">{bookData.isbn}</dd>
+              </div>
+            )}
+            {bookData.categories && (
+              <div class="flex justify-between">
+                <dt class="text-text-secondary">Category</dt>
+                <dd class="font-semibold">{bookData.categories.name}</dd>
+              </div>
+            )}
+            <div class="flex justify-between">
+              <dt class="text-text-secondary">Price</dt>
+              <dd class="font-semibold text-accent-teal">£{bookData.price.toFixed(2)}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-text-secondary">Stock</dt>
+              <dd class="font-semibold">{bookData.stock_quantity} available</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Shipping Info -->
+        <div class="mt-8 p-4 bg-primary-darkAlt border border-accent-blue rounded-lg">
+          <p class="text-sm text-text-secondary">
+            <strong class="text-accent-teal">Free shipping</strong> on orders over £30. Standard delivery within 3-5 working days.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Books Section -->
+    {bookData.categories && (
+      <div class="mt-16">
+        <h2 class="text-3xl font-bold text-accent-teal mb-8">More from {bookData.categories.name}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <p class="col-span-full text-text-secondary text-center py-8">Related books coming soon</p>
+        </div>
+      </div>
+    )}
+  </div>
+</BaseLayout>

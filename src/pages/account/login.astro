@@ -1,0 +1,34 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LoginForm from '../../components/account/LoginForm.vue';
+---
+
+<BaseLayout title="Sign In" description="Sign in to your Cook Book Bake account">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-accent-teal mb-2">Sign In</h1>
+        <p class="text-text-secondary">Welcome back to Cook Book Bake</p>
+      </div>
+
+      <!-- Login Form -->
+      <div class="bg-primary-darkAlt rounded-lg p-8 border border-text-muted">
+        <LoginForm client:load />
+      </div>
+
+      <!-- Info Box -->
+      <div class="mt-8 p-6 bg-primary-darkAlt rounded-lg border border-text-muted">
+        <h3 class="text-lg font-bold text-accent-teal mb-3">Demo Credentials</h3>
+        <p class="text-sm text-text-secondary mb-2">
+          <strong>Email:</strong> customer@example.com
+        </p>
+        <p class="text-sm text-text-secondary">
+          <strong>Password:</strong> Demo123! (from sample data)
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

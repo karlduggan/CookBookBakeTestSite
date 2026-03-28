@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Payment Cancelled" description="Your payment was cancelled">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto text-center">
+      <!-- Icon -->
+      <div class="mb-6">
+        <svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="text-3xl font-bold text-text-primary mb-2">Payment Cancelled</h1>
+      <p class="text-lg text-text-secondary mb-8">
+        Your payment was cancelled. Your cart items are still saved and ready for checkout anytime.
+      </p>
+
+      <!-- What Happened -->
+      <div class="bg-primary-darkAlt rounded-lg p-6 border border-text-muted mb-8">
+        <h2 class="font-bold text-text-primary mb-3">What happened?</h2>
+        <p class="text-text-secondary text-sm mb-3">
+          You cancelled the payment on the Stripe checkout page. No payment was processed, and your items remain in your cart.
+        </p>
+        <p class="text-text-secondary text-sm">
+          You can return to checkout anytime to complete your purchase.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3">
+        <a href="/checkout" class="block btn-primary py-3 font-semibold">
+          Return to Checkout
+        </a>
+        <a href="/shop" class="block btn-secondary py-3 font-semibold">
+          Continue Shopping
+        </a>
+      </div>
+
+      <!-- Support -->
+      <div class="mt-8 pt-8 border-t border-text-muted">
+        <p class="text-text-secondary text-sm">
+          Need help? Contact us at
+          <a href="mailto:support@cookbookbake.co.uk" class="text-accent-teal hover:text-accent-blue">
+            support@cookbookbake.co.uk
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

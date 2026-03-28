@@ -1,0 +1,43 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RegisterForm from '../../components/account/RegisterForm.vue';
+---
+
+<BaseLayout title="Create Account" description="Sign up for a Cook Book Bake account">
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-accent-teal mb-2">Create Account</h1>
+        <p class="text-text-secondary">Join Cook Book Bake and start shopping</p>
+      </div>
+
+      <!-- Register Form -->
+      <div class="bg-primary-darkAlt rounded-lg p-8 border border-text-muted">
+        <RegisterForm client:load />
+      </div>
+
+      <!-- Benefits -->
+      <div class="mt-8 grid grid-cols-2 gap-4">
+        <div class="p-4 bg-primary-darkAlt rounded-lg border border-text-muted">
+          <div class="text-accent-teal font-bold text-lg mb-2">✓</div>
+          <p class="text-sm text-text-secondary">Order History</p>
+        </div>
+        <div class="p-4 bg-primary-darkAlt rounded-lg border border-text-muted">
+          <div class="text-accent-teal font-bold text-lg mb-2">✓</div>
+          <p class="text-sm text-text-secondary">Saved Addresses</p>
+        </div>
+        <div class="p-4 bg-primary-darkAlt rounded-lg border border-text-muted">
+          <div class="text-accent-teal font-bold text-lg mb-2">✓</div>
+          <p class="text-sm text-text-secondary">Faster Checkout</p>
+        </div>
+        <div class="p-4 bg-primary-darkAlt rounded-lg border border-text-muted">
+          <div class="text-accent-teal font-bold text-lg mb-2">✓</div>
+          <p class="text-sm text-text-secondary">Wishlists</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

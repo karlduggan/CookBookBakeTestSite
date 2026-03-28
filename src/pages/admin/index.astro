@@ -1,0 +1,10 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminDashboard from '../../components/admin/AdminDashboard.vue';
+---
+
+<AdminLayout title="Admin Dashboard" description="Cook Book Bake Admin Dashboard">
+  <AdminDashboard client:load />
+</AdminLayout>

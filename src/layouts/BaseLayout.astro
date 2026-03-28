@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+import NavigationBar from '../components/layout/NavigationBar.vue';
+import Footer from '../components/layout/Footer.vue';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Cook Book Bake', description = 'Brighton & Hove\'s Independent Specialist Cookbook Shop' } = Astro.props as Props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#B8E0E8" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
+    <title>{title} - Cook Book Bake</title>
+  </head>
+  <body class="bg-primary-light text-text-primary">
+    <NavigationBar client:load />
+
+    <main class="min-h-screen">
+      <slot />
+    </main>
+
+    <Footer client:load />
+  </body>
+</html>

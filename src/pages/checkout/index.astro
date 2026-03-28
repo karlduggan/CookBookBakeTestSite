@@ -1,0 +1,125 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CheckoutForm from '../../components/checkout/CheckoutForm.vue';
+---
+
+<BaseLayout title="Checkout" description="Complete your purchase">
+  <div class="container mx-auto px-4 py-12">
+    <!-- Progress Indicator -->
+    <div class="mb-12">
+      <div class="flex items-center justify-center space-x-4">
+        <div class="text-center">
+          <div class="w-10 h-10 rounded-full bg-accent-teal text-primary-dark flex items-center justify-center font-bold mb-2">
+            1
+          </div>
+          <p class="text-sm text-text-secondary">Cart</p>
+        </div>
+
+        <div class="flex-1 h-1 bg-text-muted"></div>
+
+        <div class="text-center">
+          <div class="w-10 h-10 rounded-full bg-accent-blue text-white flex items-center justify-center font-bold mb-2">
+            2
+          </div>
+          <p class="text-sm text-accent-teal">Checkout</p>
+        </div>
+
+        <div class="flex-1 h-1 bg-text-muted"></div>
+
+        <div class="text-center">
+          <div class="w-10 h-10 rounded-full border-2 border-text-muted text-text-secondary flex items-center justify-center font-bold mb-2">
+            3
+          </div>
+          <p class="text-sm text-text-secondary">Confirmation</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Checkout Form -->
+      <div class="lg:col-span-2">
+        <div class="bg-primary-darkAlt rounded-lg p-8 border border-text-muted">
+          <h1 class="text-3xl font-bold text-accent-teal mb-6">Checkout</h1>
+          <CheckoutForm client:load />
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-primary-darkAlt rounded-lg p-6 border border-text-muted sticky top-24">
+          <h2 class="text-xl font-bold text-accent-teal mb-6">Order Summary</h2>
+
+          <div id="cart-summary" class="space-y-4 mb-6">
+            <!-- Cart items will be populated here by the CheckoutForm component -->
+            <p class="text-text-secondary text-sm">Loading cart...</p>
+          </div>
+
+          <!-- Subtotal -->
+          <div class="border-t border-text-muted pt-4 mb-4">
+            <div class="flex justify-between mb-2">
+              <span class="text-text-secondary">Subtotal:</span>
+              <span id="subtotal-amount" class="text-text-primary font-semibold">£0.00</span>
+            </div>
+
+            <div class="flex justify-between mb-2">
+              <span class="text-text-secondary">Shipping:</span>
+              <span id="shipping-amount" class="text-text-primary font-semibold">£0.00</span>
+            </div>
+
+            <div class="flex justify-between mb-4">
+              <span class="text-text-secondary">Tax (20%):</span>
+              <span id="tax-amount" class="text-text-primary font-semibold">£0.00</span>
+            </div>
+
+            <div class="flex justify-between border-t border-text-muted pt-4 text-lg">
+              <span class="font-bold text-text-primary">Total:</span>
+              <span id="total-amount" class="font-bold text-accent-teal">£0.00</span>
+            </div>
+          </div>
+
+          <!-- Info Box -->
+          <div class="bg-primary-dark rounded-lg p-4 text-sm text-text-secondary space-y-2">
+            <p>✓ Secure payment with Stripe</p>
+            <p>✓ Free shipping on orders over £30</p>
+            <p>✓ Tracked delivery</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ publicSiteUrl: import.meta.env.PUBLIC_SITE_URL }}>
+    // This script will be used by CheckoutForm to update the summary
+    window.updateOrderSummary = function (cart) {
+      const subtotal = cart.subtotal || 0;
+      const shipping = cart.shipping || 0;
+      const tax = cart.tax || 0;
+      const total = cart.total || 0;
+
+      document.getElementById('subtotal-amount').textContent = '£' + subtotal.toFixed(2);
+      document.getElementById('shipping-amount').textContent = '£' + shipping.toFixed(2);
+      document.getElementById('tax-amount').textContent = '£' + tax.toFixed(2);
+      document.getElementById('total-amount').textContent = '£' + total.toFixed(2);
+
+      // Update cart items display
+      const cartSummary = document.getElementById('cart-summary');
+      if (cart.items && cart.items.length > 0) {
+        cartSummary.innerHTML = cart.items
+          .map(
+            (item) => `
+          <div class="flex justify-between pb-3 border-b border-text-muted">
+            <div>
+              <p class="font-semibold text-text-primary">${item.title}</p>
+              <p class="text-sm text-text-secondary">${item.quantity}x £${item.price.toFixed(2)}</p>
+            </div>
+            <p class="font-semibold text-text-primary">£${(item.price * item.quantity).toFixed(2)}</p>
+          </div>
+        `
+          )
+          .join('');
+      }
+    };
+  </script>
+</BaseLayout>

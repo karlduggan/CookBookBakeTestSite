@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export const prerender = false;
+---
+
+<BaseLayout title="Home" description="Welcome to Cook Book Bake - Brighton & Hove's Independent Specialist Cookbook Shop">
+  <div class="container mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-bold mb-4 text-accent-teal">Welcome to Cook Book Bake</h1>
+      <p class="text-xl text-text-secondary">
+        Brighton & Hove's Independent Specialist Cookbook Shop & Demonstration Kitchen
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div class="p-6 bg-white rounded-lg border border-text-muted hover:border-accent-teal transition-colors shadow-md">
+        <h2 class="text-2xl font-bold text-accent-teal mb-2">Browse Our Collection</h2>
+        <p class="text-text-secondary mb-4">
+          Specialty cookbooks, culinary guides, and rare editions from around the world.
+        </p>
+        <a href="/shop" class="btn-primary inline-block">Explore Shop</a>
+      </div>
+
+      <div class="p-6 bg-white rounded-lg border border-text-muted hover:border-accent-teal transition-colors shadow-md">
+        <h2 class="text-2xl font-bold text-accent-teal mb-2">Featured Books</h2>
+        <p class="text-text-secondary mb-4">
+          Check out our curated selection of featured and bestselling cookbooks.
+        </p>
+        <a href="/shop?featured=true" class="btn-primary inline-block">See Featured</a>
+      </div>
+
+      <div class="p-6 bg-white rounded-lg border border-text-muted hover:border-accent-teal transition-colors shadow-md">
+        <h2 class="text-2xl font-bold text-accent-teal mb-2">Visit Us</h2>
+        <p class="text-text-secondary text-sm">
+          7 Victoria Terrace, Hove, BN3 2WB<br/>
+          <strong>Wed–Sun:</strong> 10am–6pm<br/>
+          <strong>Phone:</strong> 01273 779520
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg p-12 border border-accent-teal shadow-md">
+      <h2 class="text-3xl font-bold text-accent-teal mb-4">About Cook Book Bake</h2>
+      <p class="text-text-secondary mb-4">
+        Cook Book Bake is Brighton & Hove's premier independent specialist cookbook shop. We curate a carefully selected collection of cookbooks featuring classic recipes, modern techniques, international cuisines, and specialty dietary guides.
+      </p>
+      <p class="text-text-secondary">
+        From baking and pastry to vegetarian cooking and fermentation techniques, our collection serves both home cooks and culinary professionals. We're passionate about books that inspire, educate, and celebrate the art of cooking.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

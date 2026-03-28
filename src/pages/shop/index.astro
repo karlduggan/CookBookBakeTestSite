@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBar from '../../components/shop/SearchBar.vue';
+import BookFilters from '../../components/shop/BookFilters.vue';
+import BookCard from '../../components/shop/BookCard.vue';
+import ShopClient from '../../components/shop/ShopClient.vue';
+---
+
+<BaseLayout title="Shop" description="Browse our collection of specialty cookbooks">
+  <div class="container mx-auto px-4 py-12">
+    <!-- Page Header -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold text-accent-teal mb-4">Book Shop</h1>
+      <p class="text-xl text-text-secondary">
+        Browse our curated collection of specialty cookbooks, culinary guides, and rare editions.
+      </p>
+    </div>
+
+    <!-- Main Content - Client Component Handles Everything -->
+    <ShopClient client:load />
+  </div>
+</BaseLayout>

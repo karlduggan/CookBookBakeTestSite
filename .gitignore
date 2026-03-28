@@ -1,0 +1,59 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# testing
+coverage/
+
+# production
+dist/
+build/
+
+# misc
+.DS_Store
+*.pem
+.env
+.env.local
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+*.c9/
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Netlify
+.netlify/
+.env.production
+.cache/
+
+# Astro
+.astro/
+
+# pnpm
+pnpm-lock.yaml
+
+# Claude Code
+.claude/plans/
