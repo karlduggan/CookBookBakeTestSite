@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '/Users/cellsoftware/Documents/cookbookbake/.env.local' });
-
 import { createSupabaseAnonClient } from '../../lib/api-utils/supabase.js';
 import { successResponse, errorResponse, validationError, serverError } from '../../lib/api-utils/response.js';
 
