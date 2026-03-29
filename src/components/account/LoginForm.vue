@@ -48,15 +48,6 @@
       <span v-else>Sign In</span>
     </button>
 
-    <!-- Register Link -->
-    <div class="text-center">
-      <p class="text-text-secondary">
-        Don't have an account?
-        <a href="/account/register" class="text-accent-teal hover:text-accent-teal-dark font-semibold">
-          Sign up
-        </a>
-      </p>
-    </div>
   </form>
 </template>
 

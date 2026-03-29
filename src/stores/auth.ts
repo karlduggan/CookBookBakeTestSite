@@ -78,44 +78,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  const register = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          firstName,
-          lastName,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Registration failed');
-      }
-
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Registration failed';
-      error.value = message;
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
   const logout = async () => {
     try {
       isLoading.value = true;
@@ -156,7 +118,6 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     checkAuth,
     login,
-    register,
     logout,
     clearError,
   };
