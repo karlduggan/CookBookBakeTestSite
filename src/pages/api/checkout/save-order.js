@@ -28,23 +28,34 @@ function generateOrderNumber() {
 
 export async function POST(context) {
   try {
+    console.log('[save-order] ===== START =====');
     const url = new URL(context.request.url);
     const sessionId = url.searchParams.get('session_id');
 
     if (!sessionId) {
+      console.log('[save-order] Missing session_id');
       return validationError('Missing session_id');
     }
 
     console.log('[save-order] Processing order for session:', sessionId);
 
     // Get authentication info
-    const auth = authenticateRequest(context.request.headers);
-    const userId = auth.isAuthenticated ? auth.user?.userId : undefined;
+    try {
+      const auth = authenticateRequest(context.request.headers);
+      const userId = auth.isAuthenticated ? auth.user?.userId : undefined;
+      console.log('[save-order] Auth processed, userId:', userId);
+    } catch (authErr) {
+      console.warn('[save-order] Auth error (non-fatal):', authErr);
+    }
 
+    console.log('[save-order] Creating Supabase client...');
     const supabase = createSupabaseClient();
+    console.log('[save-order] Supabase client created');
 
     // Retrieve session details from Stripe
+    console.log('[save-order] Retrieving session from Stripe...');
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    console.log('[save-order] Stripe session retrieved successfully');
 
     if (!session) {
       return validationError('Session not found');
@@ -146,10 +157,16 @@ export async function POST(context) {
       orderId: order.id,
     });
   } catch (error) {
+    console.error('[save-order] ===== EXCEPTION =====');
+    console.error('[save-order] Error type:', typeof error);
     console.error('[save-order] Error:', error);
     if (error instanceof Error) {
       console.error('[save-order] Error message:', error.message);
+      console.error('[save-order] Stack:', error.stack);
+    } else {
+      console.error('[save-order] Error (non-Error object):', JSON.stringify(error));
     }
+    console.error('[save-order] ===== END EXCEPTION =====');
     return serverError(error instanceof Error ? error.message : 'Failed to save order');
   }
 }
