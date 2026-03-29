@@ -1,6 +1,8 @@
 import { stripe } from '../../../lib/api-utils/stripe.js';
 import { successResponse, validationError, serverError } from '../../../lib/api-utils/response.js';
 
+export const prerender = false;
+
 export async function GET(context) {
   try {
     const url = new URL(context.request.url);
@@ -26,7 +28,10 @@ export async function GET(context) {
       metadata: session.metadata,
     });
   } catch (error) {
-    console.error('Session details error:', error);
-    return serverError(error);
+    console.error('[session-details] Error:', error);
+    if (error instanceof Error) {
+      console.error('[session-details] Error message:', error.message);
+    }
+    return serverError(error instanceof Error ? error.message : 'Failed to retrieve session details');
   }
 }
