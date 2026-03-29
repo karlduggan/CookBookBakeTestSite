@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
+  <form @submit.prevent="handleSubmit" @submit="() => console.log('[CheckoutForm] Form submitted')" class="space-y-6">
     <!-- Cart Validation -->
     <div v-if="!hasItems" class="p-4 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg text-yellow-400">
       Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
@@ -144,7 +144,9 @@
     <button
       type="submit"
       :disabled="isLoading || !hasItems"
+      @click="() => console.log('[CheckoutForm Button] Clicked! disabled:', isLoading || !hasItems)"
       class="w-full btn-primary py-3 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      style="cursor: pointer;"
     >
       <span v-if="isLoading">Processing...</span>
       <span v-else>Proceed to Payment</span>
@@ -153,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useCart } from '../../composables/useCart';
 import { useAuthStore } from '../../stores/auth';
 
@@ -305,6 +307,25 @@ onMounted(async () => {
     console.log('[CheckoutForm] Cart items:', cart?.items);
     console.log('[CheckoutForm] Cart total:', cart?.total);
     console.log('[CheckoutForm] hasItems computed value:', hasItems.value);
+
+    // Check form validity after DOM is ready
+    await nextTick();
+    const formElement = document.querySelector('form');
+    if (formElement) {
+      console.log('[CheckoutForm] Form element found');
+      console.log('[CheckoutForm] Form.checkValidity():', formElement.checkValidity());
+
+      // Check all input fields
+      const inputs = formElement.querySelectorAll('input, select, textarea');
+      inputs.forEach((input: any, index: number) => {
+        console.log(`[CheckoutForm] Input ${index} (${input.name || input.type}):`, {
+          value: input.value,
+          required: input.required,
+          valid: input.validity.valid,
+          validity: input.validity
+        });
+      });
+    }
   } catch (e) {
     console.error('[CheckoutForm] Error during mount:', e);
   }
