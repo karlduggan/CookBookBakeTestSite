@@ -94,20 +94,28 @@ export const useCartStore = defineStore('cart', () => {
   };
 
   const persist = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(items.value));
+    if (typeof window !== 'undefined' && localStorage) {
+      try {
+        localStorage.setItem('cart', JSON.stringify(items.value));
+      } catch (e) {
+        console.error('[Cart Store] Failed to persist:', e);
+      }
     }
   };
 
   const hydrate = () => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cart');
-      if (saved) {
-        try {
-          items.value = JSON.parse(saved);
-        } catch (e) {
-          console.error('Failed to hydrate cart:', e);
+    if (typeof window !== 'undefined' && localStorage) {
+      try {
+        const saved = localStorage.getItem('cart');
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (Array.isArray(data)) {
+            items.value = data;
+            console.log('[Cart Store] Hydrated from localStorage, items:', data.length);
+          }
         }
+      } catch (e) {
+        console.error('[Cart Store] Failed to hydrate:', e);
       }
     }
   };

@@ -96,11 +96,15 @@ const cart = useCart();
 
 // Force hydrate cart from localStorage on mount
 onMounted(() => {
-  if (cart.hydrate) {
-    cart.hydrate();
+  try {
+    if (cart && cart.hydrate) {
+      cart.hydrate();
+    }
+    console.log('[OrderSummary] Mounted with items:', cart?.items?.length || 0);
+    console.log('[OrderSummary] Cart items:', cart?.items);
+  } catch (e) {
+    console.error('[OrderSummary] Error during mount:', e);
   }
-  console.log('[OrderSummary] Mounted with items:', cart.items.length);
-  console.log('[OrderSummary] Cart items:', cart.items);
 });
 
 // Handle quantity changes

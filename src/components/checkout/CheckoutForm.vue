@@ -231,16 +231,22 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
-  // Force hydrate cart from localStorage
-  if (cart.hydrate) {
-    cart.hydrate();
-  }
+  try {
+    // Force hydrate cart from localStorage
+    if (cart && cart.hydrate) {
+      cart.hydrate();
+    }
 
-  console.log('[CheckoutForm] Mounted');
-  console.log('[CheckoutForm] Cart items from store:', cart.items.length);
-  console.log('[CheckoutForm] Cart items:', cart.items);
-  console.log('[CheckoutForm] Cart total:', cart.total);
-  console.log('[CheckoutForm] localStorage cart:', localStorage.getItem('cart'));
+    console.log('[CheckoutForm] Mounted');
+    console.log('[CheckoutForm] Cart items from store:', cart?.items?.length || 0);
+    console.log('[CheckoutForm] Cart items:', cart?.items);
+    console.log('[CheckoutForm] Cart total:', cart?.total);
+    if (typeof window !== 'undefined' && localStorage) {
+      console.log('[CheckoutForm] localStorage cart:', localStorage.getItem('cart'));
+    }
+  } catch (e) {
+    console.error('[CheckoutForm] Error during mount:', e);
+  }
 
   // Lazy load auth store on mount
   if (!auth) {
