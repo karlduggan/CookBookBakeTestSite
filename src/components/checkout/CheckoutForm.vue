@@ -136,9 +136,10 @@
 
     <!-- Submit Button -->
     <button
-      type="submit"
-      :disabled="isLoading || !hasItems"
-      class="w-full btn-primary py-3 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      type="button"
+      @click="handleSubmit"
+      :style="{ opacity: (isLoading || !hasItems) ? 0.5 : 1, cursor: (isLoading || !hasItems) ? 'not-allowed' : 'pointer' }"
+      class="w-full btn-primary py-3 font-bold text-lg transition-all"
     >
       <span v-if="isLoading">Processing...</span>
       <span v-else>Proceed to Payment</span>
@@ -188,14 +189,13 @@ watch(
 );
 
 const handleSubmit = async () => {
-  console.log('[CHECKOUT] Button clicked! handleSubmit called');
-  error.value = null;
-
-  if (!hasItems.value) {
-    error.value = 'Your cart is empty';
-    console.log('[CHECKOUT] Error: cart is empty');
+  if (isLoading.value || !hasItems.value) {
+    console.log('[CHECKOUT] Button disabled, ignoring click');
     return;
   }
+
+  console.log('[CHECKOUT] Button clicked! handleSubmit called');
+  error.value = null;
 
   if (!form.value.agreeToTerms) {
     error.value = 'You must agree to the terms and conditions';
