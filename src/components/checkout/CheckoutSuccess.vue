@@ -195,13 +195,17 @@ onMounted(async () => {
         console.log('[CheckoutSuccess] Save-order response status:', saveOrderResponse.status);
 
         const saveOrderData = await saveOrderResponse.json();
-        console.log('[CheckoutSuccess] Save-order response data:', saveOrderData);
+        console.log('[CheckoutSuccess] Save-order full response:', JSON.stringify(saveOrderData, null, 2));
+        console.log('[CheckoutSuccess] saveOrderData.success:', saveOrderData.success);
+        console.log('[CheckoutSuccess] saveOrderData.data:', saveOrderData.data);
+        console.log('[CheckoutSuccess] orderNumber from response:', saveOrderData.data?.orderNumber);
 
         if (saveOrderData.success && saveOrderData.data?.orderNumber) {
           orderNumber.value = saveOrderData.data.orderNumber;
-          console.log('[CheckoutSuccess] Order saved with number:', orderNumber.value);
+          console.log('[CheckoutSuccess] ✓ Order number set to:', orderNumber.value);
         } else {
-          console.warn('[CheckoutSuccess] Failed to save order. Response:', saveOrderData);
+          console.warn('[CheckoutSuccess] ✗ Failed to get order number. Falling back to session ID');
+          console.warn('[CheckoutSuccess] Response was:', saveOrderData);
           orderNumber.value = sessionId.value;
         }
       } catch (e) {
