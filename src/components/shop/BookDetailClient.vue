@@ -1,19 +1,39 @@
 <template>
-  <div class="mt-6 space-y-2">
+  <div class="mt-6 space-y-3">
+    <!-- Error message -->
+    <div v-if="error" class="p-3 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400 text-sm">
+      {{ error }}
+    </div>
+
+    <!-- Add/Remove Button -->
     <button
       v-if="inStock"
-      @click="handleAddToCart"
-      class="w-full btn-primary py-3 text-lg font-bold"
+      type="button"
+      @click="toggleCart"
+      :disabled="isLoading"
+      :class="{
+        'w-full py-3 px-4 text-lg font-bold rounded-lg cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed': true,
+        'btn-primary hover:opacity-90': !isInCart,
+        'bg-red-600 hover:bg-red-700 text-white': isInCart,
+      }"
     >
-      Add to Cart
+      {{ isLoading ? (isInCart ? 'Removing...' : 'Adding...') : (isInCart ? '✕ Remove from Cart' : '+ Add to Cart') }}
     </button>
-    <button v-else disabled class="w-full py-3 bg-gray-400 text-white rounded-lg cursor-not-allowed opacity-50 font-bold">
+
+    <!-- Out of Stock -->
+    <button
+      v-else
+      type="button"
+      disabled
+      class="w-full py-3 px-4 bg-gray-400 text-white rounded-lg cursor-not-allowed opacity-50 font-bold"
+    >
       Out of Stock
     </button>
 
-    <!-- Add to Wishlist (stub) -->
+    <!-- Wishlist -->
     <button
-      class="w-full py-3 border border-accent-teal text-accent-teal rounded-lg hover:bg-primary-light-alt transition-colors font-semibold"
+      type="button"
+      class="w-full py-3 px-4 border border-accent-teal text-accent-teal rounded-lg hover:bg-primary-light-alt transition-colors font-semibold cursor-pointer"
     >
       ♡ Save to Wishlist
     </button>
@@ -21,7 +41,10 @@
 </template>
 
 <script setup lang="ts">
-interface BookDetailClientProps {
+import { ref, onMounted, watch } from 'vue';
+import { useCartStore } from '../../stores/cart';
+
+interface Props {
   bookId: string;
   title: string;
   author: string;
@@ -31,28 +54,59 @@ interface BookDetailClientProps {
   inStock: boolean;
 }
 
-const props = defineProps<BookDetailClientProps>();
+const props = defineProps<Props>();
+const error = ref<string | null>(null);
+const isLoading = ref(false);
+const isInCart = ref(false);
+const cart = useCartStore();
 
-const handleAddToCart = async () => {
-  // Lazy load store only when needed
-  const { useCartStore } = await import('../../stores/cart');
-  const cart = useCartStore();
+// Check if item is in cart on mount
+onMounted(() => {
+  isInCart.value = cart.isInCart(props.bookId);
 
-  cart.addItem({
-    bookId: props.bookId,
-    title: props.title,
-    author: props.author,
-    price: props.price,
-    quantity: 1,
-    coverImageUrl: props.coverImageUrl,
-    stockAvailable: props.stockQuantity,
-  });
+  // Watch for cart changes
+  watch(
+    () => cart.items.length,
+    () => {
+      isInCart.value = cart.isInCart(props.bookId);
+    }
+  );
+});
 
-  // Show feedback
-  alert(`"${props.title}" added to cart!`);
+// Toggle add/remove from cart
+const toggleCart = () => {
+  if (isLoading.value) return;
+
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    if (isInCart.value) {
+      cart.removeItem(props.bookId);
+      alert(`"${props.title}" removed from cart`);
+    } else {
+      cart.addItem({
+        bookId: props.bookId,
+        title: props.title,
+        author: props.author,
+        price: props.price,
+        quantity: 1,
+        coverImageUrl: props.coverImageUrl,
+        stockAvailable: props.stockQuantity,
+      });
+      alert(`"${props.title}" added to cart!`);
+    }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to update cart';
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
 <style scoped>
-/* Component styles */
+/* Ensure proper spacing and sizing */
+button {
+  min-height: 44px;
+}
 </style>
