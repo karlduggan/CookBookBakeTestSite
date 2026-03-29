@@ -8,7 +8,7 @@ export async function GET(context) {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .order('display_order', { ascending: true });
+      .order('name', { ascending: true });
 
     if (error) {
       console.error('Database error:', error);
