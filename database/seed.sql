@@ -10,8 +10,8 @@ INSERT INTO categories (name, slug, description, display_order) VALUES
   ('Classic Cookbooks', 'classic-cookbooks', 'Timeless culinary references', 6)
 ON CONFLICT DO NOTHING;
 
--- Insert sample books
-INSERT INTO books (title, author, isbn, description, price, stock_quantity, category_id, featured, bestseller) VALUES
+-- Insert sample books with cover images
+INSERT INTO books (title, author, isbn, description, price, stock_quantity, category_id, featured, bestseller, cover_image_url) VALUES
   (
     'The Art of French Cooking',
     'Julia Child',
@@ -21,7 +21,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     15,
     (SELECT id FROM categories WHERE slug = 'international-cuisine'),
     TRUE,
-    TRUE
+    TRUE,
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop'
   ),
   (
     'Salt Fat Acid Heat',
@@ -32,7 +33,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     22,
     (SELECT id FROM categories WHERE slug = 'classic-cookbooks'),
     TRUE,
-    TRUE
+    TRUE,
+    'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=600&fit=crop'
   ),
   (
     'The Bread Baker''s Handbook',
@@ -43,7 +45,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     10,
     (SELECT id FROM categories WHERE slug = 'baking'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=600&fit=crop'
   ),
   (
     'Chocolate: From Bean to Bar',
@@ -54,7 +57,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     8,
     (SELECT id FROM categories WHERE slug = 'desserts'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=600&fit=crop'
   ),
   (
     'The Plant-Based Kitchen',
@@ -65,7 +69,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     12,
     (SELECT id FROM categories WHERE slug = 'vegetarian-vegan'),
     TRUE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=600&fit=crop'
   ),
   (
     'Gluten-Free All Year',
@@ -76,7 +81,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     7,
     (SELECT id FROM categories WHERE slug = 'specialty-diets'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1534080564513-e96416b471da?w=400&h=600&fit=crop'
   ),
   (
     'Mastering the Art of Pasta',
@@ -87,7 +93,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     14,
     (SELECT id FROM categories WHERE slug = 'international-cuisine'),
     FALSE,
-    TRUE
+    TRUE,
+    'https://images.unsplash.com/photo-1473093295203-cad00df16e50?w=400&h=600&fit=crop'
   ),
   (
     'The Complete Tart Book',
@@ -98,7 +105,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     9,
     (SELECT id FROM categories WHERE slug = 'baking'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1585080872051-9bac9a55afd4?w=400&h=600&fit=crop'
   ),
   (
     'Modern Vegan Baking',
@@ -109,7 +117,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     20,
     (SELECT id FROM categories WHERE slug = 'vegetarian-vegan'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1599599810694-b5ac4dd94210?w=400&h=600&fit=crop'
   ),
   (
     'Fermentation: The Essential Guide',
@@ -120,7 +129,8 @@ INSERT INTO books (title, author, isbn, description, price, stock_quantity, cate
     6,
     (SELECT id FROM categories WHERE slug = 'specialty-diets'),
     FALSE,
-    FALSE
+    FALSE,
+    'https://images.unsplash.com/photo-1608897261409-5e5b9d346f44?w=400&h=600&fit=crop'
   );
 
 -- Create a sample admin user (you'll need to set a proper bcrypt hash in production)
