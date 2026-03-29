@@ -122,6 +122,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useCartStore } from '../../stores/cart';
 
 interface OrderDetails {
   sessionId: string;
@@ -166,6 +167,15 @@ onMounted(async () => {
         sessionId: sessionId.value,
         ...data.data,
       };
+
+      // Clear the cart after successful payment
+      try {
+        const cart = useCartStore();
+        cart.clear();
+        console.log('[CheckoutSuccess] Cart cleared after successful payment');
+      } catch (e) {
+        console.warn('[CheckoutSuccess] Could not clear cart:', e);
+      }
     } else {
       error.value = data.error || 'Failed to retrieve order details';
     }
