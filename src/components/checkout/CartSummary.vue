@@ -1,7 +1,12 @@
 <template>
   <div class="space-y-4">
+    <!-- Loading message -->
+    <div v-if="!isReady" class="text-text-secondary text-center py-8">
+      Loading cart...
+    </div>
+
     <!-- Empty cart message -->
-    <div v-if="cart.items.length === 0" class="text-text-secondary text-center py-8">
+    <div v-else-if="!cart || cart.items.length === 0" class="text-text-secondary text-center py-8">
       Your cart is empty
     </div>
 
@@ -59,9 +64,20 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
-const cart = useCartStore();
+let cart: any = null;
+const isReady = ref(false);
+
+onMounted(() => {
+  try {
+    cart = useCartStore();
+    isReady.value = true;
+  } catch (e) {
+    console.error('[CartSummary] Error initializing cart:', e);
+  }
+});
 </script>
 
 <style scoped>

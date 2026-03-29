@@ -1,5 +1,8 @@
 <template>
-  <div class="border-t border-text-muted pt-4">
+  <div v-if="!cart" class="border-t border-text-muted pt-4">
+    <p class="text-text-secondary text-sm">Loading totals...</p>
+  </div>
+  <div v-else class="border-t border-text-muted pt-4">
     <!-- Subtotal -->
     <div class="flex justify-between mb-2">
       <span class="text-text-secondary">Subtotal:</span>
@@ -27,9 +30,18 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
-const cart = useCartStore();
+let cart: any = null;
+
+onMounted(() => {
+  try {
+    cart = useCartStore();
+  } catch (e) {
+    console.error('[OrderTotals] Error initializing cart:', e);
+  }
+});
 </script>
 
 <style scoped>

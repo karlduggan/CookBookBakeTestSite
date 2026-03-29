@@ -58,19 +58,25 @@ const props = defineProps<Props>();
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 const isInCart = ref(false);
-const cart = useCartStore();
+let cart: any = null;
 
-// Check if item is in cart on mount
+// Initialize store on mount
 onMounted(() => {
-  isInCart.value = cart.isInCart(props.bookId);
+  try {
+    cart = useCartStore();
+    isInCart.value = cart.isInCart(props.bookId);
 
-  // Watch for cart changes
-  watch(
-    () => cart.items.length,
-    () => {
-      isInCart.value = cart.isInCart(props.bookId);
-    }
-  );
+    // Watch for cart changes
+    watch(
+      () => cart.items.length,
+      () => {
+        isInCart.value = cart.isInCart(props.bookId);
+      }
+    );
+  } catch (e) {
+    console.error('[BookDetailClient] Error initializing cart:', e);
+    error.value = 'Cart not available. Please refresh the page.';
+  }
 });
 
 // Toggle add/remove from cart
