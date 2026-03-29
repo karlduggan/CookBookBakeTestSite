@@ -99,6 +99,56 @@ Updated `database/seed.sql` to include working Unsplash image URLs for all books
 
 ---
 
+## Order Summary Totals Not Updating on Checkout Page
+
+### Problem
+On the checkout page, when removing items from the cart or changing quantities, the order summary (subtotal, shipping, tax, total) wouldn't update. The CartSummary would update but the OrderTotals stayed the same.
+
+### Root Cause
+**Astro Vue island isolation**: CartSummary and OrderTotals were separate Vue components with `client:load` directives, meaning they were rendered as separate Vue islands with completely separate Vue instances and reactivity systems. Even though they both used the same Pinia store, changes in one component didn't trigger re-renders in the other because they had no shared Vue context.
+
+The cart store's computed properties (subtotal, shipping, tax, total) were reactive within each component, but the components didn't know when to check for updates since they were isolated islands.
+
+### Solution
+**Consolidated both components into a single OrderSummary component** (`src/components/checkout/OrderSummary.vue`):
+
+1. **Created unified component** that contains both:
+   - Cart items display (previously CartSummary)
+   - Order totals (previously OrderTotals)
+   - Both quantity controls and remove buttons
+
+2. **Updated checkout page** (`src/pages/checkout/index.astro`):
+   - Removed separate `CartSummary client:load` and `OrderTotals client:load` imports
+   - Replaced with single `OrderSummary client:load` component
+   - Now renders as a single hydrated Vue instance
+
+3. **How it works now**:
+   - All state changes (add/remove/quantity updates) happen in the same Vue component
+   - Vue's reactivity properly detects changes to `cart.items`
+   - Computed properties for cart totals automatically recalculate
+   - Template re-renders with updated values
+   - Single 'cart-updated' event dispatch notifies NavigationBar of changes
+
+### Code References
+- **Unified component**: `src/components/checkout/OrderSummary.vue` - contains both CartSummary and OrderTotals
+- **Checkout page**: `src/pages/checkout/index.astro` - uses `<OrderSummary client:load />`
+- **No longer used**: Old `CartSummary.vue` and `OrderTotals.vue` are still in the codebase but not imported
+
+### Why This Works
+- **Single Vue instance**: Both cart items and totals are in the same component, sharing Vue's reactivity
+- **Direct computed property access**: Component directly accesses `cart.subtotal`, `cart.shipping`, `cart.tax`, `cart.total`
+- **Reactive chain**: When cart.items changes → computed properties recalculate → template re-renders
+- **No cross-island communication needed**: Everything happens within one Vue component instance
+
+### If It Breaks Again
+1. Check that OrderSummary is being used in checkout page (not old CartSummary + OrderTotals)
+2. Verify OrderSummary has `client:load` directive in checkout page
+3. Ensure cart store computed properties are working: check `cart.subtotal`, `cart.tax`, `cart.total` in browser console
+4. Add console.log in handleQuantityChange and handleRemoveItem to verify functions are being called
+5. Check that cart.updateQuantity and cart.removeItem work correctly (they update cart.items array)
+
+---
+
 ## Key Architecture Notes
 
 ### Pinia Store Initialization
@@ -122,5 +172,8 @@ Updated `database/seed.sql` to include working Unsplash image URLs for all books
 - **Add cover images to book seed data**: Fixed broken placeholder images
 - **Fix environment variables in Supabase client**: Fixed API route failures
 - **Add isInCart method to cart store**: Fixed BookDetailClient rendering error
-- **Fix cart counter updates using localStorage and window events**: Fixed real-time counter updates
+- **Fix cart counter updates using localStorage and window events**: Fixed real-time cart counter in navigation
+- **Fix cart counter not updating when removing items from checkout page**: Added event dispatch in CartSummary
+- **Fix order summary totals using computed properties/forced re-render patterns**: Attempted fixes for totals (didn't fully work)
+- **Fix order summary totals by combining into single component**: Final successful fix - merged CartSummary and OrderTotals into unified OrderSummary component to share Vue instance
 
