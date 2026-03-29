@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { createSupabaseAnonClient } from './utils/supabase';
-import { successResponse, serverError } from './utils/response';
+import { createSupabaseAnonClient } from './utils/supabase.js';
+import { successResponse, serverError } from './utils/response.js';
 
 const handler: Handler = async (event) => {
   try {

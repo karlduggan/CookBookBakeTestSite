@@ -1,8 +1,8 @@
 import { Handler } from '@netlify/functions';
-import { createSupabaseClient } from '../utils/supabase';
-import { stripe } from '../utils/stripe';
-import { successResponse, validationError, serverError, unauthorizedError } from '../utils/response';
-import { authenticateRequest } from '../utils/auth';
+import { createSupabaseClient } from '../utils/supabase.js';
+import { stripe } from '../utils/stripe.js';
+import { successResponse, validationError, serverError, unauthorizedError } from '../utils/response.js';
+import { authenticateRequest } from '../utils/auth.js';
 
 interface CheckoutRequest {
   items: Array<{

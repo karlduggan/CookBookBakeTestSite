@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { clearTokenCookie } from '../utils/auth';
+import { clearTokenCookie } from '../utils/auth.js';
 
 const handler: Handler = async (event) => {
   try {

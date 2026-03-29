@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
 import bcrypt from 'bcryptjs';
-import { createSupabaseClient } from '../utils/supabase';
+import { createSupabaseClient } from '../utils/supabase.js';
 import {
   successResponse,
   validationError,
@@ -9,7 +9,7 @@ import {
   validateEmail,
   validatePassword,
 } from '../utils/response';
-import { generateTokens, setTokenCookie } from '../utils/auth';
+import { generateTokens, setTokenCookie } from '../utils/auth.js';
 
 interface RegisterRequest {
   email: string;

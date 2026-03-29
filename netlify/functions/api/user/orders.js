@@ -1,7 +1,7 @@
 import { Handler } from '@netlify/functions';
-import { createSupabaseClient } from '../utils/supabase';
-import { successResponse, unauthorizedError, serverError } from '../utils/response';
-import { authenticateRequest } from '../utils/auth';
+import { createSupabaseClient } from '../utils/supabase.js';
+import { successResponse, unauthorizedError, serverError } from '../utils/response.js';
+import { authenticateRequest } from '../utils/auth.js';
 
 const handler: Handler = async (event) => {
   try {

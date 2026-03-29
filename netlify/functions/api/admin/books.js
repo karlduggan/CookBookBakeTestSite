@@ -1,6 +1,6 @@
-import { createSupabaseClient } from '../../utils/supabase';
-import { authenticateRequest } from '../../utils/auth';
-import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../utils/response';
+import { createSupabaseClient } from '../../utils/supabase.js';
+import { authenticateRequest } from '../../utils/auth.js';
+import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../utils/response.js';
 
 // POST /api/admin/books - Create new book
 // PUT /api/admin/books/:id - Update book

@@ -1,7 +1,7 @@
 import { Handler } from '@netlify/functions';
-import { stripe } from '../utils/stripe';
-import { createSupabaseClient } from '../utils/supabase';
-import { sendOrderConfirmationEmail } from '../utils/email';
+import { stripe } from '../utils/stripe.js';
+import { createSupabaseClient } from '../utils/supabase.js';
+import { sendOrderConfirmationEmail } from '../utils/email.js';
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 

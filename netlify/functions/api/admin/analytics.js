@@ -1,6 +1,6 @@
-import { createSupabaseClient } from '../../utils/supabase';
-import { authenticateRequest } from '../../utils/auth';
-import { successResponse, unauthorizedError, serverError } from '../../utils/response';
+import { createSupabaseClient } from '../../utils/supabase.js';
+import { authenticateRequest } from '../../utils/auth.js';
+import { successResponse, unauthorizedError, serverError } from '../../utils/response.js';
 
 // GET /api/admin/analytics - Get sales analytics
 

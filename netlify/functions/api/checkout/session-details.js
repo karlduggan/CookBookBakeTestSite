@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { stripe } from '../utils/stripe';
-import { successResponse, validationError, serverError } from '../utils/response';
+import { stripe } from '../utils/stripe.js';
+import { successResponse, validationError, serverError } from '../utils/response.js';
 
 const handler: Handler = async (event) => {
   try {

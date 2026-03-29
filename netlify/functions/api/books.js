@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { createSupabaseAnonClient } from './utils/supabase';
-import { successResponse, errorResponse, serverError, validationError } from './utils/response';
+import { createSupabaseAnonClient } from './utils/supabase.js';
+import { successResponse, errorResponse, serverError, validationError } from './utils/response.js';
 
 interface ListBooksQuery {
   page?: string;
