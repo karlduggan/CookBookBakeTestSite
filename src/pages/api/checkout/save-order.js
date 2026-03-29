@@ -71,18 +71,19 @@ export async function POST(context) {
       const { data: existing, error } = await supabase
         .from('orders')
         .select('id')
-        .eq('order_number', orderNumber)
-        .single();
+        .eq('order_number', orderNumber);
 
-      if (error && error.code === 'PGRST116') {
-        // PGRST116 means no rows found - good!
+      if (!error && (!existing || existing.length === 0)) {
+        // No rows found - order number is unique!
+        console.log('[save-order] Generated unique order number:', orderNumber);
         break;
       }
+      console.log('[save-order] Order number exists, generating new one...');
       attempts++;
     }
 
     if (attempts === maxAttempts) {
-      console.error('[save-order] Failed to generate unique order number');
+      console.error('[save-order] Failed to generate unique order number after', maxAttempts, 'attempts');
       return serverError('Failed to generate order number');
     }
 
