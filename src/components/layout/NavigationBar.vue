@@ -72,55 +72,47 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useCart } from '../../composables/useCart';
+import { ref, onMounted } from 'vue';
 
 const isMenuOpen = ref(false);
+const cartCount = ref(0);
 
-try {
-  var cart = useCart();
-} catch (e) {
-  console.error('[NavigationBar] Failed to initialize cart:', e);
-  var cart = null;
-}
-
-// Use computed property directly from cart store for true reactivity
-const cartCount = computed(() => {
-  try {
-    return cart?.itemCount || 0;
-  } catch (e) {
-    console.error('[NavigationBar] Error reading cart count:', e);
-    return 0;
+// Update cart count by reading directly from localStorage
+const updateCartCount = () => {
+  if (typeof window !== 'undefined' && localStorage) {
+    try {
+      const cart = localStorage.getItem('cart');
+      if (cart) {
+        const items = JSON.parse(cart);
+        cartCount.value = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+        console.log('[NavigationBar] Updated cart count from localStorage:', cartCount.value);
+      } else {
+        cartCount.value = 0;
+      }
+    } catch (e) {
+      console.error('[NavigationBar] Error reading cart from localStorage:', e);
+      cartCount.value = 0;
+    }
   }
-});
+};
 
 // Set up event listeners after mount
 onMounted(() => {
-  console.log('[NavigationBar] Mounted, initial cart count:', cartCount.value);
+  // Initial load
+  updateCartCount();
 
-  if (!cart) return;
-
-  // Log cart updates for debugging
-  const handleCartUpdate = () => {
-    console.log('[NavigationBar] Cart updated event received, count:', cartCount.value);
-  };
-
+  // Listen for cart updates from other components
   if (typeof window !== 'undefined') {
-    window.addEventListener('cart-updated', handleCartUpdate);
+    window.addEventListener('cart-updated', updateCartCount);
+    console.log('[NavigationBar] Listening for cart-updated events');
   }
 
-  // Subscribe to store changes as backup
-  const unsubscribe = cart.$subscribe(() => {
-    console.log('[NavigationBar] Store changed, count:', cartCount.value);
-  });
-
-  // Cleanup on unmount
-  onUnmounted(() => {
+  // Cleanup listener on component unmount
+  return () => {
     if (typeof window !== 'undefined') {
-      window.removeEventListener('cart-updated', handleCartUpdate);
+      window.removeEventListener('cart-updated', updateCartCount);
     }
-    unsubscribe();
-  });
+  };
 });
 
 const toggleMenu = () => {
