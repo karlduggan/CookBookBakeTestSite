@@ -13,6 +13,7 @@
     "@astrojs/netlify": "^5.5.4",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vue": "^4.2.0",
+    "@netlify/functions": "^5.1.5",
     "@supabase/supabase-js": "^2.43.0",
     "astro": "^4.16.0",
     "bcryptjs": "^2.4.3",
