@@ -1,5 +1,8 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
+    <div v-if="!isMounted" class="p-4 bg-gray-200 rounded">Loading...</div>
+
+    <template v-if="isMounted">
     <!-- Cart Validation -->
     <div v-if="!hasItems" class="p-4 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg text-yellow-400">
       Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
@@ -139,6 +142,7 @@
       <span v-if="isLoading">Processing...</span>
       <span v-else>Proceed to Payment</span>
     </button>
+    </template>
   </form>
 </template>
 
@@ -146,6 +150,9 @@
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useCart } from '../../composables/useCart';
 import { useAuthStore } from '../../stores/auth';
+
+// Only render form when mounted to avoid hydration mismatches
+const isMounted = ref(false);
 
 const form = ref({
   name: '',
@@ -264,6 +271,8 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
+  isMounted.value = true;
+
   try {
     // Check what's in localStorage FIRST
     let localStorageCart = null;
