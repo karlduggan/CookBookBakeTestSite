@@ -195,6 +195,7 @@ const handleSubmit = async () => {
   }
 
   isLoading.value = true;
+  console.log('[CheckoutForm] Starting checkout with', cart.items.length, 'items');
 
   try {
     // Prepare checkout data
@@ -214,6 +215,8 @@ const handleSubmit = async () => {
       },
     };
 
+    console.log('[CheckoutForm] Sending checkout data:', checkoutData);
+
     // Create checkout session
     const response = await fetch('/api/checkout/create-session', {
       method: 'POST',
@@ -224,21 +227,35 @@ const handleSubmit = async () => {
       credentials: 'include',
     });
 
+    console.log('[CheckoutForm] API response status:', response.status);
+
     const data = await response.json();
+    console.log('[CheckoutForm] API response data:', data);
+
+    if (!response.ok) {
+      error.value = data.error || `API error: ${response.status} ${response.statusText}`;
+      console.error('[CheckoutForm] API error:', error.value);
+      return;
+    }
 
     if (!data.success) {
       error.value = data.error || 'Failed to create checkout session';
+      console.error('[CheckoutForm] Checkout failed:', error.value);
       return;
     }
 
     // Redirect to Stripe Checkout
-    if (data.data.sessionUrl) {
+    if (data.data?.sessionUrl) {
+      console.log('[CheckoutForm] Redirecting to Stripe:', data.data.sessionUrl);
       window.location.href = data.data.sessionUrl;
     } else {
-      error.value = 'No checkout URL returned';
+      error.value = 'No checkout URL returned from server';
+      console.error('[CheckoutForm] Missing sessionUrl in response:', data);
     }
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An error occurred';
+    const errorMsg = err instanceof Error ? err.message : 'An error occurred';
+    error.value = errorMsg;
+    console.error('[CheckoutForm] Exception:', err);
   } finally {
     isLoading.value = false;
   }

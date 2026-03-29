@@ -5,15 +5,20 @@ import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 
 export async function POST(context) {
   try {
+    console.log('[create-session] Checkout request received');
+
     const body = await context.request.json();
+    console.log('[create-session] Request body:', JSON.stringify(body, null, 2));
 
     // Validate cart items
     if (!body.items || body.items.length === 0) {
+      console.log('[create-session] Cart is empty');
       return validationError('Cart is empty');
     }
 
     // Validate shipping details
     if (!body.shippingDetails || !body.shippingDetails.name || !body.shippingDetails.email) {
+      console.log('[create-session] Missing shipping details');
       return validationError('Missing shipping details');
     }
 
@@ -21,19 +26,31 @@ export async function POST(context) {
     const auth = authenticateRequest(context.request.headers);
     const userId = auth.isAuthenticated ? auth.user?.userId : undefined;
     const email = body.shippingDetails.email;
+    console.log('[create-session] User:', userId ? `ID ${userId}` : 'guest', 'Email:', email);
 
     const supabase = createSupabaseClient();
+    console.log('[create-session] Supabase client created');
 
     // Fetch book details and validate stock
     const bookIds = body.items.map((item) => item.bookId);
+    console.log('[create-session] Fetching books:', bookIds);
+
     const { data: books, error: booksError } = await supabase
       .from('books')
       .select('id, title, author, price, stock_quantity, cover_image_url')
       .in('id', bookIds);
 
-    if (booksError || !books) {
+    if (booksError) {
+      console.error('[create-session] Supabase error fetching books:', booksError);
+      return serverError('Failed to fetch books: ' + booksError.message);
+    }
+
+    if (!books) {
+      console.error('[create-session] No books returned from database');
       return serverError('Failed to fetch books');
     }
+
+    console.log('[create-session] Found', books.length, 'books');
 
     // Create line items for Stripe
     const lineItems = body.items
@@ -91,6 +108,10 @@ export async function POST(context) {
 
     // Create Stripe Checkout Session
     const siteUrl = import.meta.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+    console.log('[create-session] Site URL:', siteUrl);
+    console.log('[create-session] Creating Stripe session with', lineItems.length, 'line items');
+    console.log('[create-session] Line items:', JSON.stringify(lineItems, null, 2));
+
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -116,12 +137,21 @@ export async function POST(context) {
       },
     });
 
+    console.log('[create-session] Stripe session created:', checkoutSession.id);
+    console.log('[create-session] Session URL:', checkoutSession.url);
+
     return successResponse({
       sessionId: checkoutSession.id,
       sessionUrl: checkoutSession.url,
     });
   } catch (error) {
-    console.error('Checkout error:', error);
-    return serverError(error);
+    console.error('[create-session] Error:', error);
+    if (error.message) {
+      console.error('[create-session] Error message:', error.message);
+    }
+    if (error.code) {
+      console.error('[create-session] Error code:', error.code);
+    }
+    return serverError(error.message || 'Checkout failed');
   }
 }
