@@ -92,30 +92,42 @@ export async function POST(context) {
     // Extract metadata from session
     const metadata = session.metadata || {};
 
+    console.log('[save-order] Session metadata:', JSON.stringify(metadata, null, 2));
+
+    // Validate required fields
+    if (!metadata.shippingName || !metadata.shippingAddressLine1 || !metadata.shippingCity || !metadata.shippingPostcode) {
+      console.error('[save-order] Missing required shipping details in metadata');
+      console.log('[save-order] Available metadata:', Object.keys(metadata));
+      return validationError('Missing shipping details in session metadata');
+    }
+
     // Create order in database
+    const orderData = {
+      order_number: orderNumber,
+      user_id: userId || null,
+      guest_email: session.customer_email || metadata.email,
+      total_amount: (session.amount_total || 0) / 100, // Convert from cents to pounds
+      status: session.payment_status === 'paid' ? 'payment_received' : 'pending',
+      stripe_payment_intent_id: sessionId,
+      shipping_name: metadata.shippingName,
+      shipping_address_line1: metadata.shippingAddressLine1,
+      shipping_address_line2: metadata.shippingAddressLine2 || null,
+      shipping_city: metadata.shippingCity,
+      shipping_postcode: metadata.shippingPostcode,
+      shipping_country: metadata.shippingCountry || 'United Kingdom',
+    };
+
+    console.log('[save-order] Inserting order data:', JSON.stringify(orderData, null, 2));
+
     const { data: order, error: insertError } = await supabase
       .from('orders')
-      .insert({
-        order_number: orderNumber,
-        user_id: userId || null,
-        guest_email: session.customer_email || metadata.email,
-        total_amount: (session.amount_total || 0) / 100, // Convert from cents to pounds
-        status: session.payment_status === 'paid' ? 'payment_received' : 'pending',
-        stripe_payment_intent_id: sessionId,
-        shipping_name: metadata.shippingName,
-        shipping_address_line1: metadata.shippingAddressLine1,
-        shipping_address_line2: metadata.shippingAddressLine2 || null,
-        shipping_city: metadata.shippingCity,
-        shipping_county: metadata.shippingCounty || null,
-        shipping_postcode: metadata.shippingPostcode,
-        shipping_country: metadata.shippingCountry || 'United Kingdom',
-      })
+      .insert([orderData])
       .select()
       .single();
 
     if (insertError) {
-      console.error('[save-order] Database insert error:', insertError);
-      return serverError('Failed to save order: ' + insertError.message);
+      console.error('[save-order] Database insert error:', JSON.stringify(insertError, null, 2));
+      return serverError('Database insert failed');
     }
 
     console.log('[save-order] Order saved successfully:', orderNumber);
