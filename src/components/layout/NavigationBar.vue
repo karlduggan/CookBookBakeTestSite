@@ -72,11 +72,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 const isMenuOpen = ref(false);
 const cartStore = useCartStore();
+
+// Force reactivity by watching the items array
+const cartCount = ref(0);
+
+watch(
+  () => cartStore.items.length,
+  () => {
+    cartCount.value = cartStore.itemCount;
+  },
+  { immediate: true }
+);
+
+// Also watch for quantity changes
+watch(
+  () => cartStore.items.map(item => item.quantity),
+  () => {
+    cartCount.value = cartStore.itemCount;
+  },
+  { deep: true }
+);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -85,9 +105,6 @@ const toggleMenu = () => {
 const toggleCart = () => {
   window.location.href = '/checkout';
 };
-
-// Cart counter - watches store reactively
-const cartCount = computed(() => cartStore.itemCount);
 </script>
 
 <style scoped>
