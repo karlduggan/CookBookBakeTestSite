@@ -1,8 +1,8 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
     <!-- Sidebar - Filters -->
     <div class="lg:col-span-1">
-      <div class="sticky top-24 bg-white rounded-lg p-6 border border-text-muted shadow-md">
+      <div class="sticky top-24 bg-white rounded-lg p-4 border border-text-muted shadow-md">
         <BookFilters
           @update:category="handleCategoryChange"
           @update:price="handlePriceChange"
@@ -14,7 +14,7 @@
     </div>
 
     <!-- Main Content - Books Grid -->
-    <div class="lg:col-span-3">
+    <div class="lg:col-span-4">
       <!-- Search Bar -->
       <div class="mb-8">
         <SearchBar @search="handleSearch" />
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Books Grid -->
-      <div v-if="!isLoading && displayedBooks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div v-if="!isLoading && displayedBooks.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
         <BookCard v-for="book in displayedBooks" :key="book.id" :book="book" />
       </div>
 

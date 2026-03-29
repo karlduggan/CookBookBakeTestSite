@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-white rounded-lg overflow-hidden border border-text-muted hover:border-accent-teal transition-all hover:shadow-lg shadow-md">
+  <a
+    :href="`/shop/${encodeURIComponent(book.title.toLowerCase().replace(/\\s+/g, '-'))}`"
+    class="block bg-white rounded-lg overflow-hidden border border-text-muted hover:border-accent-teal transition-all hover:shadow-lg shadow-md cursor-pointer group"
+  >
     <!-- Image container -->
     <div class="relative aspect-[2/3] bg-primary-light-alt overflow-hidden">
       <img
@@ -32,8 +35,9 @@
       <!-- Add to cart button (hover) -->
       <button
         v-if="book.stock_quantity > 0"
-        @click="addToCart"
-        class="absolute bottom-0 left-0 right-0 bg-accent-teal text-white py-3 font-bold hover:bg-accent-teal-dark transition-colors transform translate-y-full group-hover:translate-y-0"
+        @click.prevent="addToCart"
+        type="button"
+        class="absolute bottom-0 left-0 right-0 bg-accent-teal text-white py-3 font-bold hover:bg-accent-teal-dark transition-colors transform translate-y-full group-hover:translate-y-0 z-10"
       >
         Add to Cart
       </button>
@@ -66,17 +70,8 @@
         <span v-else class="text-red-500">Out of Stock</span>
       </div>
 
-      <!-- View Details Link -->
-      <div class="pt-2">
-        <a
-          :href="`/shop/${encodeURIComponent(book.title.toLowerCase().replace(/\\s+/g, '-'))}`"
-          class="block text-center bg-primary-light-alt text-accent-teal py-2 rounded hover:bg-accent-teal hover:text-white transition-colors font-semibold"
-        >
-          View Details
-        </a>
-      </div>
     </div>
-  </div>
+  </a>
 </template>
 
 <script setup lang="ts">
