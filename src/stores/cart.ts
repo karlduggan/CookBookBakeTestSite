@@ -52,18 +52,24 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       // Increase quantity but respect stock limit
       existing.quantity = Math.min(existing.quantity + 1, book.stockAvailable);
+      console.log('[Cart] Updated item quantity:', book.title, 'qty:', existing.quantity);
     } else {
       // Add new item
       items.value.push({
         ...book,
         quantity: 1,
       });
+      console.log('[Cart] Added item:', book.title, 'items now:', items.value.length);
     }
 
     persist();
   };
 
   const removeItem = (bookId: string) => {
+    const removed = items.value.find((item) => item.bookId === bookId);
+    if (removed) {
+      console.log('[Cart] Removed item:', removed.title, 'items remaining:', items.value.length - 1);
+    }
     items.value = items.value.filter((item) => item.bookId !== bookId);
     persist();
   };
@@ -79,12 +85,14 @@ export const useCartStore = defineStore('cart', () => {
       return;
     }
 
+    const oldQty = item.quantity;
     if (quantity > item.stockAvailable) {
       item.quantity = item.stockAvailable;
     } else {
       item.quantity = quantity;
     }
 
+    console.log('[Cart] Updated quantity for', item.title, 'from', oldQty, 'to', item.quantity);
     persist();
   };
 

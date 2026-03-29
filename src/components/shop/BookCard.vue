@@ -111,15 +111,25 @@ const addToCart = () => {
 
   if (!props.book) return;
 
-  cart.addItem({
-    bookId: props.book.id,
-    title: props.book.title,
-    author: props.book.author,
-    price: props.book.price,
-    quantity: 1,
-    coverImageUrl: props.book.cover_image_url,
-    stockAvailable: props.book.stock_quantity,
-  });
+  try {
+    cart.addItem({
+      bookId: props.book.id,
+      title: props.book.title,
+      author: props.book.author,
+      price: props.book.price,
+      quantity: 1,
+      coverImageUrl: props.book.cover_image_url,
+      stockAvailable: props.book.stock_quantity,
+    });
+
+    // Dispatch event to notify other components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('cart-updated'));
+      console.log('[BookCard] Item added to cart, dispatching update event');
+    }
+  } catch (e) {
+    console.error('[BookCard] Error adding to cart:', e);
+  }
 };
 </script>
 

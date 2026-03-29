@@ -72,39 +72,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useCart } from '../../composables/useCart';
 
 const isMenuOpen = ref(false);
-const cart = useCart();
-const cartCount = ref(0);
 
-// Update cart count from store
-const updateCartCount = () => {
+try {
+  var cart = useCart();
+} catch (e) {
+  console.error('[NavigationBar] Failed to initialize cart:', e);
+  var cart = null;
+}
+
+// Use computed property directly from cart store for true reactivity
+const cartCount = computed(() => {
   try {
-    cartCount.value = cart.itemCount;
-    console.log('[NavigationBar] Cart count updated:', cartCount.value);
+    return cart?.itemCount || 0;
   } catch (e) {
-    console.error('[NavigationBar] Error updating cart count:', e);
-    cartCount.value = 0;
+    console.error('[NavigationBar] Error reading cart count:', e);
+    return 0;
   }
-};
+});
 
-// Set up reactivity after mount
+// Set up event listeners after mount
 onMounted(() => {
-  updateCartCount();
+  console.log('[NavigationBar] Mounted, initial cart count:', cartCount.value);
 
-  // Listen for cart updates from other components
-  window.addEventListener('cart-updated', updateCartCount);
+  if (!cart) return;
 
-  // Also subscribe to store changes
-  cart.$subscribe(() => {
-    updateCartCount();
+  // Log cart updates for debugging
+  const handleCartUpdate = () => {
+    console.log('[NavigationBar] Cart updated event received, count:', cartCount.value);
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('cart-updated', handleCartUpdate);
+  }
+
+  // Subscribe to store changes as backup
+  const unsubscribe = cart.$subscribe(() => {
+    console.log('[NavigationBar] Store changed, count:', cartCount.value);
   });
 
-  return () => {
-    window.removeEventListener('cart-updated', updateCartCount);
-  };
+  // Cleanup on unmount
+  onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('cart-updated', handleCartUpdate);
+    }
+    unsubscribe();
+  });
 });
 
 const toggleMenu = () => {
