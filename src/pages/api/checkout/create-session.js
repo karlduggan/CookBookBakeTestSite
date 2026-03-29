@@ -90,14 +90,15 @@ export async function POST(context) {
     }
 
     // Create Stripe Checkout Session
+    const siteUrl = import.meta.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
       customer_email: email,
       billing_address_collection: 'required',
-      success_url: `${process.env.PUBLIC_SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.PUBLIC_SITE_URL}/checkout/cancelled`,
+      success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}/checkout/cancelled`,
       metadata: {
         userId: userId || 'guest',
         email: email,
