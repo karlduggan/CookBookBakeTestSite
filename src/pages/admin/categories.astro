@@ -3,6 +3,15 @@ export const prerender = false;
 
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminCategoriesClient from '../../components/admin/AdminCategoriesClient.vue';
+import { checkAdminAccess } from '../../lib/api-utils/admin-auth.js';
+
+// Check admin access
+const adminCheck = await checkAdminAccess(Astro.request.headers);
+
+if (!adminCheck.isAdmin) {
+  console.log('[admin/categories] Unauthorized access attempt');
+  return Astro.redirect('/account/login?redirect=/admin/categories');
+}
 ---
 
 <AdminLayout title="Manage Categories" description="Manage book categories in Cook Book Bake">

@@ -3,6 +3,15 @@ export const prerender = false;
 
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminBooksClient from '../../components/admin/AdminBooksClient.vue';
+import { checkAdminAccess } from '../../lib/api-utils/admin-auth.js';
+
+// Check admin access
+const adminCheck = await checkAdminAccess(Astro.request.headers);
+
+if (!adminCheck.isAdmin) {
+  console.log('[admin/books] Unauthorized access attempt');
+  return Astro.redirect('/account/login?redirect=/admin/books');
+}
 ---
 
 <AdminLayout title="Manage Books" description="Manage books in the Cook Book Bake inventory">

@@ -3,6 +3,17 @@ export const prerender = false;
 
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminDashboard from '../../components/admin/AdminDashboard.vue';
+import { checkAdminAccess } from '../../lib/api-utils/admin-auth.js';
+
+// Check admin access
+const adminCheck = await checkAdminAccess(Astro.request.headers);
+
+if (!adminCheck.isAdmin) {
+  console.log('[admin] Unauthorized access attempt');
+  return Astro.redirect('/account/login?redirect=/admin');
+}
+
+console.log('[admin] Admin user access granted:', adminCheck.user.email);
 ---
 
 <AdminLayout title="Admin Dashboard" description="Cook Book Bake Admin Dashboard">
