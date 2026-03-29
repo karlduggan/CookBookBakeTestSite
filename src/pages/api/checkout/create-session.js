@@ -5,9 +5,21 @@ import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 
 export async function POST(context) {
   try {
-    console.log('[create-session] Checkout request received');
+    console.log('[create-session] POST request received');
+    console.log('[create-session] Content-Type:', context.request.headers.get('content-type'));
+    console.log('[create-session] Content-Length:', context.request.headers.get('content-length'));
 
-    const body = await context.request.json();
+    // Clone the body to inspect it
+    const bodyText = await context.request.text();
+    console.log('[create-session] Raw body:', bodyText);
+    console.log('[create-session] Body length:', bodyText.length);
+
+    if (!bodyText) {
+      console.error('[create-session] Body is empty!');
+      return serverError('Request body is empty');
+    }
+
+    const body = JSON.parse(bodyText);
     console.log('[create-session] Request body:', JSON.stringify(body, null, 2));
 
     // Validate cart items
