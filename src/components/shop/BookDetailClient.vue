@@ -77,7 +77,6 @@ const toggleCart = () => {
   try {
     if (isInCart.value) {
       cart.removeItem(props.bookId);
-      alert(`"${props.title}" removed from cart`);
     } else {
       cart.addItem({
         bookId: props.bookId,
@@ -88,7 +87,6 @@ const toggleCart = () => {
         coverImageUrl: props.coverImageUrl,
         stockAvailable: props.stockQuantity,
       });
-      alert(`"${props.title}" added to cart!`);
     }
 
     // Dispatch custom event to notify other components
