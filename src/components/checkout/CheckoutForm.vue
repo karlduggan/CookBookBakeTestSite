@@ -16,6 +16,9 @@
       <p>cartItemsLength ref: {{ cartItemsLength }}</p>
       <p>cart.items.length: {{ cart?.items?.length || 0 }}</p>
       <p>hasItems computed: {{ hasItems }}</p>
+      <p>!hasItems (opposite): {{ !hasItems }}</p>
+      <p>isLoading: {{ isLoading }}</p>
+      <p>Disabled binding (isLoading || !hasItems): {{ isLoading || !hasItems }}</p>
       <p>cart.total: £{{ cart?.total?.toFixed(2) || '0.00' }}</p>
     </div>
 
