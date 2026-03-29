@@ -30,25 +30,27 @@
       <div class="bg-white rounded-lg p-6 border border-text-muted shadow-md">
         <h2 class="text-lg font-bold text-accent-teal mb-4">Order Information</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
+        <div class="space-y-4 text-sm">
+          <div class="pb-4 border-b border-text-muted">
             <p class="text-text-secondary mb-1">Order Number</p>
-            <p class="text-text-primary font-semibold">{{ orderNumber }}</p>
+            <p class="text-text-primary font-semibold break-all">{{ orderNumber }}</p>
           </div>
 
-          <div>
+          <div class="pb-4 border-b border-text-muted">
             <p class="text-text-secondary mb-1">Email</p>
             <p class="text-text-primary font-semibold">{{ orderDetails.customerEmail }}</p>
           </div>
 
-          <div>
-            <p class="text-text-secondary mb-1">Payment Status</p>
-            <p class="text-green-400 font-semibold">{{ formatStatus(orderDetails.paymentStatus) }}</p>
-          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-text-secondary mb-1">Payment Status</p>
+              <p class="text-green-400 font-semibold">{{ formatStatus(orderDetails.paymentStatus) }}</p>
+            </div>
 
-          <div>
-            <p class="text-text-secondary mb-1">Total Amount</p>
-            <p class="text-accent-teal font-semibold">£{{ orderDetails.totalAmount.toFixed(2) }}</p>
+            <div>
+              <p class="text-text-secondary mb-1">Total Amount</p>
+              <p class="text-accent-teal font-semibold">£{{ orderDetails.totalAmount.toFixed(2) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -169,6 +171,15 @@ onMounted(async () => {
         ...data.data,
       };
 
+      // Clear the cart immediately after successful payment
+      try {
+        const cart = useCartStore();
+        cart.clear();
+        console.log('[CheckoutSuccess] Cart cleared after successful payment');
+      } catch (e) {
+        console.warn('[CheckoutSuccess] Could not clear cart:', e);
+      }
+
       // Save order to database and get custom order number
       try {
         console.log('[CheckoutSuccess] Calling save-order API for session:', sessionId.value);
@@ -190,15 +201,6 @@ onMounted(async () => {
       } catch (e) {
         console.error('[CheckoutSuccess] Error saving order:', e);
         orderNumber.value = sessionId.value;
-      }
-
-      // Clear the cart after successful payment
-      try {
-        const cart = useCartStore();
-        cart.clear();
-        console.log('[CheckoutSuccess] Cart cleared after successful payment');
-      } catch (e) {
-        console.warn('[CheckoutSuccess] Could not clear cart:', e);
       }
     } else {
       error.value = data.error || 'Failed to retrieve order details';
