@@ -26,7 +26,7 @@
           <div class="flex items-center gap-2">
             <button
               type="button"
-              @click="cart.updateQuantity(item.bookId, item.quantity - 1)"
+              @click="handleQuantityChange(item.bookId, item.quantity - 1)"
               class="px-2 py-1 bg-primary-darkAlt text-text-primary rounded hover:bg-primary-dark cursor-pointer transition-colors"
               title="Decrease quantity"
             >
@@ -35,7 +35,7 @@
             <span class="w-6 text-center font-semibold">{{ item.quantity }}</span>
             <button
               type="button"
-              @click="cart.updateQuantity(item.bookId, item.quantity + 1)"
+              @click="handleQuantityChange(item.bookId, item.quantity + 1)"
               :disabled="item.quantity >= item.stockAvailable"
               class="px-2 py-1 bg-primary-darkAlt text-text-primary rounded hover:bg-primary-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Increase quantity"
@@ -47,7 +47,7 @@
           <!-- Remove Button -->
           <button
             type="button"
-            @click="cart.removeItem(item.bookId)"
+            @click="handleRemoveItem(item.bookId)"
             class="px-3 py-1 text-red-500 hover:bg-red-500 hover:bg-opacity-10 rounded text-sm font-semibold cursor-pointer transition-colors whitespace-nowrap"
           >
             Remove
@@ -62,6 +62,25 @@
 import { useCartStore } from '../../stores/cart';
 
 const cart = useCartStore();
+
+// Handle quantity changes and dispatch event
+const handleQuantityChange = (bookId: string, newQuantity: number) => {
+  cart.updateQuantity(bookId, newQuantity);
+  dispatchCartUpdate();
+};
+
+// Handle item removal and dispatch event
+const handleRemoveItem = (bookId: string) => {
+  cart.removeItem(bookId);
+  dispatchCartUpdate();
+};
+
+// Dispatch custom event to notify other components
+const dispatchCartUpdate = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('cart-updated'));
+  }
+};
 </script>
 
 <style scoped>
