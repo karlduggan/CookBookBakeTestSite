@@ -6,7 +6,14 @@ const REFRESH_TOKEN_EXPIRY = '7d';
 // Lazy load JWT_SECRET to handle environment variable timing issues
 function getJWTSecret() {
   const secret = process.env.JWT_SECRET;
+
   if (!secret) {
+    // Development fallback - use a default for testing
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[auth.js] JWT_SECRET not found. Using development fallback. CHANGE THIS IN PRODUCTION!');
+      return 'dev-secret-key-change-in-production-12345';
+    }
+
     console.error('[auth.js] JWT_SECRET not found in environment. Make sure it is set in .env.local');
     throw new Error('JWT_SECRET environment variable is not set');
   }
