@@ -72,11 +72,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 const isMenuOpen = ref(false);
-let cartStore: any = null;
+const cartStore = useCartStore();
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -86,28 +86,8 @@ const toggleCart = () => {
   window.location.href = '/checkout';
 };
 
-// Watch cart changes and compute count
-const cartCount = computed(() => {
-  if (!cartStore) return 0;
-  return cartStore.itemCount;
-});
-
-// Initialize store on mount
-onMounted(() => {
-  try {
-    cartStore = useCartStore();
-
-    // Debug logging
-    watch(
-      () => cartStore.items.length,
-      (newLength) => {
-        console.log('[NavigationBar] Cart items changed to', newLength, 'items, total count:', cartStore.itemCount);
-      }
-    );
-  } catch (e) {
-    console.error('[NavigationBar] Error initializing cart:', e);
-  }
-});
+// Cart counter - watches store reactively
+const cartCount = computed(() => cartStore.itemCount);
 </script>
 
 <style scoped>

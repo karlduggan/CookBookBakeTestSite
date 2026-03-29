@@ -10,7 +10,7 @@
       v-if="inStock"
       type="button"
       @click="toggleCart"
-      :disabled="isLoading"
+      :disabled="isLoading || !cart"
       :class="{
         'w-full py-3 px-4 text-lg font-bold rounded-lg cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed': true,
         'btn-primary hover:opacity-90': !isInCart,
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 interface Props {
@@ -57,31 +57,19 @@ interface Props {
 const props = defineProps<Props>();
 const error = ref<string | null>(null);
 const isLoading = ref(false);
-const isInCart = ref(false);
-let cart: any = null;
 
-// Initialize store on mount
-onMounted(() => {
-  try {
-    cart = useCartStore();
-    isInCart.value = cart.isInCart(props.bookId);
+// Initialize store directly
+const cart = useCartStore();
 
-    // Watch for cart changes
-    watch(
-      () => cart.items.length,
-      () => {
-        isInCart.value = cart.isInCart(props.bookId);
-      }
-    );
-  } catch (e) {
-    console.error('[BookDetailClient] Error initializing cart:', e);
-    error.value = 'Cart not available. Please refresh the page.';
-  }
+// Computed property for checking if in cart
+const isInCart = computed(() => {
+  if (!cart) return false;
+  return cart.isInCart(props.bookId);
 });
 
 // Toggle add/remove from cart
 const toggleCart = () => {
-  if (isLoading.value) return;
+  if (isLoading.value || !cart) return;
 
   isLoading.value = true;
   error.value = null;
@@ -104,6 +92,7 @@ const toggleCart = () => {
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to update cart';
+    console.error('[BookDetailClient] Error:', e);
   } finally {
     isLoading.value = false;
   }
