@@ -72,31 +72,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 const isMenuOpen = ref(false);
 const cartStore = useCartStore();
-
-// Force reactivity by watching the items array
 const cartCount = ref(0);
 
-watch(
-  () => cartStore.items.length,
-  () => {
-    cartCount.value = cartStore.itemCount;
-  },
-  { immediate: true }
-);
+// Update cart count immediately
+const updateCartCount = () => {
+  cartCount.value = cartStore.itemCount;
+};
 
-// Also watch for quantity changes
-watch(
-  () => cartStore.items.map(item => item.quantity),
-  () => {
-    cartCount.value = cartStore.itemCount;
-  },
-  { deep: true }
-);
+// Set up reactivity after mount to avoid hydration issues
+onMounted(() => {
+  updateCartCount();
+
+  // Subscribe to cart changes
+  cartStore.$subscribe(() => {
+    updateCartCount();
+  });
+});
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
