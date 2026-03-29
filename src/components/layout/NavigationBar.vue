@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 const isMenuOpen = ref(false);
@@ -86,7 +86,18 @@ const toggleCart = () => {
   window.location.href = '/checkout';
 };
 
-const cartCount = computed(() => cartStore.itemCount);
+// Watch cart changes and compute count
+const cartCount = computed(() => {
+  return cartStore.itemCount;
+});
+
+// Debug logging
+watch(
+  () => cartStore.items.length,
+  (newLength) => {
+    console.log('[NavigationBar] Cart items changed to', newLength, 'items, total count:', cartStore.itemCount);
+  }
+);
 </script>
 
 <style scoped>
