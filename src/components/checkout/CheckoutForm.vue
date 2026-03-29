@@ -224,6 +224,9 @@ const handleSubmit = async () => {
       },
     };
 
+    console.log('[CHECKOUT] Checkout data:', checkoutData);
+    const bodyJson = JSON.stringify(checkoutData);
+    console.log('[CHECKOUT] Body JSON length:', bodyJson.length);
     console.log('[CHECKOUT] Sending request to /api/checkout/create-session');
 
     // Create checkout session
@@ -232,7 +235,7 @@ const handleSubmit = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(checkoutData),
+      body: bodyJson,
       credentials: 'include',
     });
 
