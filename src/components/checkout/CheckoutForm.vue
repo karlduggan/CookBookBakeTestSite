@@ -209,31 +209,14 @@ const handleSubmit = async () => {
   console.log('[CHECKOUT] Starting checkout with', cart.items.length, 'items');
 
   try {
-    console.log('[CHECKOUT] Creating checkout data...');
-    console.log('[CHECKOUT] cart.items:', cart.items);
-    console.log('[CHECKOUT] form values:', form.value);
-
-    // Prepare checkout data
-    const checkoutData = {
-      items: cart.items.map((item) => ({
-        bookId: item.bookId,
-        quantity: item.quantity,
-      })),
-      shippingDetails: {
-        name: form.value.name,
-        email: form.value.email,
-        addressLine1: form.value.addressLine1,
-        addressLine2: form.value.addressLine2,
-        city: form.value.city,
-        postcode: form.value.postcode,
-        country: form.value.country,
-      },
+    // Test with hardcoded data first
+    const testData = {
+      items: [{ bookId: 'test', quantity: 1 }],
+      shippingDetails: { name: 'Test', email: 'test@test.com' }
     };
 
-    console.log('[CHECKOUT] ✅ Checkout data created:', checkoutData);
-    const bodyJson = JSON.stringify(checkoutData);
-    console.log('[CHECKOUT] Body JSON length:', bodyJson.length);
-    console.log('[CHECKOUT] Sending request to /api/checkout/create-session');
+    const bodyJson = JSON.stringify(testData);
+    console.log('[CHECKOUT] Sending test request, body length:', bodyJson.length);
 
     // Create checkout session
     const response = await fetch('/api/checkout/create-session', {
@@ -242,7 +225,6 @@ const handleSubmit = async () => {
         'Content-Type': 'application/json',
       },
       body: bodyJson,
-      credentials: 'include',
     });
 
     console.log('[CHECKOUT] API response status:', response.status);
