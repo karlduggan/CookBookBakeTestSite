@@ -90,6 +90,11 @@ const toggleCart = () => {
       });
       alert(`"${props.title}" added to cart!`);
     }
+
+    // Dispatch custom event to notify other components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('cart-updated'));
+    }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to update cart';
     console.error('[BookDetailClient] Error:', e);

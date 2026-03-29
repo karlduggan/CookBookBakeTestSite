@@ -79,19 +79,38 @@ const isMenuOpen = ref(false);
 const cartStore = useCartStore();
 const cartCount = ref(0);
 
-// Update cart count immediately
+// Update cart count
 const updateCartCount = () => {
-  cartCount.value = cartStore.itemCount;
+  if (typeof window !== 'undefined' && localStorage) {
+    try {
+      const cart = localStorage.getItem('cart');
+      if (cart) {
+        const items = JSON.parse(cart);
+        cartCount.value = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      } else {
+        cartCount.value = 0;
+      }
+    } catch (e) {
+      cartCount.value = 0;
+    }
+  }
 };
 
-// Set up reactivity after mount to avoid hydration issues
+// Set up reactivity after mount
 onMounted(() => {
   updateCartCount();
 
-  // Subscribe to cart changes
+  // Listen for cart updates from other components
+  window.addEventListener('cart-updated', updateCartCount);
+
+  // Also subscribe to store changes
   cartStore.$subscribe(() => {
     updateCartCount();
   });
+
+  return () => {
+    window.removeEventListener('cart-updated', updateCartCount);
+  };
 });
 
 const toggleMenu = () => {
