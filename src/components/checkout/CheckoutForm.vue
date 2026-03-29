@@ -129,6 +129,11 @@
       {{ error }}
     </div>
 
+    <!-- Debug: Show loading state -->
+    <div class="text-xs text-gray-500 text-center">
+      [DEBUG: isLoading={{ isLoading }}, hasItems={{ hasItems }}, disabled={{ isLoading || !hasItems }}]
+    </div>
+
     <!-- Submit Button -->
     <button
       type="submit"
