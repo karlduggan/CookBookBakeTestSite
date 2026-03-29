@@ -209,14 +209,25 @@ const handleSubmit = async () => {
   console.log('[CHECKOUT] Starting checkout with', cart.items.length, 'items');
 
   try {
-    // Test with hardcoded data first
-    const testData = {
-      items: [{ bookId: 'test', quantity: 1 }],
-      shippingDetails: { name: 'Test', email: 'test@test.com' }
+    // Prepare checkout data with real cart items
+    const checkoutData = {
+      items: cart.items.map((item) => ({
+        bookId: item.bookId,
+        quantity: item.quantity,
+      })),
+      shippingDetails: {
+        name: form.value.name,
+        email: form.value.email,
+        addressLine1: form.value.addressLine1,
+        addressLine2: form.value.addressLine2,
+        city: form.value.city,
+        postcode: form.value.postcode,
+        country: form.value.country,
+      },
     };
 
-    const bodyJson = JSON.stringify(testData);
-    console.log('[CHECKOUT] Sending test request, body length:', bodyJson.length);
+    const bodyJson = JSON.stringify(checkoutData);
+    console.log('[CHECKOUT] Sending checkout request with', cart.items.length, 'items');
 
     // Create checkout session
     const response = await fetch('/api/checkout/create-session', {
