@@ -1,26 +1,9 @@
 [build]
 command = "npm run build"
 publish = "dist"
-functions = "netlify/functions"
 
 [env]
 # Environment variables to be set in production
-
-[[redirects]]
-from = "/*"
-to = "/"
-status = 200
-
-# API routes - ensure they hit Netlify Functions
-[[redirects]]
-from = "/api/*"
-to = "/.netlify/functions/api/:splat"
-status = 200
-
-[functions]
-node_bundler = "esbuild"
-directory = "netlify/functions"
-external_node_modules = ["bcryptjs", "stripe", "dotenv", "jsonwebtoken"]
 
 [[headers]]
 for = "/*"
