@@ -2,7 +2,7 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <!-- Cart Validation -->
     <div v-if="!hasItems" class="p-4 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg text-yellow-400">
-      Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
+      Your cart is empty (cartItemsLength={{ cartItemsLength }}, cart.items.length={{ cart?.items?.length || 0 }}). <a href="/shop" class="underline">Continue shopping</a>
     </div>
 
     <!-- Debug: Show cart items count -->
