@@ -59,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
 
-const cart = useCartStore();
+const cart = useCart();
 
 // Handle quantity changes and dispatch event
 const handleQuantityChange = (bookId: string, newQuantity: number) => {

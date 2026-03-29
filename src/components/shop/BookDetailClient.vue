@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
 
 interface Props {
   bookId: string;
@@ -58,8 +58,8 @@ const props = defineProps<Props>();
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
-// Initialize store directly
-const cart = useCartStore();
+// Initialize store safely
+const cart = useCart();
 
 // Computed property for checking if in cart
 const isInCart = computed(() => {

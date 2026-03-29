@@ -28,9 +28,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
 
-const cart = useCartStore();
+const cart = useCart();
 
 // Create computed properties that depend on items length to force reactivity
 const subtotal = computed(() => {

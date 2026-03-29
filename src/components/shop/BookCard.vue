@@ -80,6 +80,8 @@
 </template>
 
 <script setup lang="ts">
+import { useCart } from '../../composables/useCart';
+
 interface Category {
   id: string;
   name: string;
@@ -104,10 +106,8 @@ interface BookCardProps {
 
 const props = defineProps<BookCardProps>();
 
-const addToCart = async () => {
-  // Lazy load store only when needed
-  const { useCartStore } = await import('../../stores/cart');
-  const cart = useCartStore();
+const addToCart = () => {
+  const cart = useCart();
 
   if (!props.book) return;
 

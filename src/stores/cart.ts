@@ -19,17 +19,8 @@ export const useCartStore = defineStore('cart', () => {
   // State
   const items = ref<CartItem[]>([]);
 
-  // Load from localStorage on init
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('cart');
-    if (saved) {
-      try {
-        items.value = JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse cart from localStorage:', e);
-      }
-    }
-  }
+  // Initialize items (Pinia plugin will hydrate from localStorage)
+  // Note: localStorage loading is now handled by entry.client.ts plugin
 
   // Getters
   const itemCount = computed(() => {

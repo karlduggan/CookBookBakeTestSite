@@ -89,9 +89,19 @@
 </template>
 
 <script setup lang="ts">
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
+import { onMounted } from 'vue';
 
-const cart = useCartStore();
+const cart = useCart();
+
+// Force hydrate cart from localStorage on mount
+onMounted(() => {
+  if (cart.hydrate) {
+    cart.hydrate();
+  }
+  console.log('[OrderSummary] Mounted with items:', cart.items.length);
+  console.log('[OrderSummary] Cart items:', cart.items);
+});
 
 // Handle quantity changes
 const handleQuantityChange = (bookId: string, newQuantity: number) => {

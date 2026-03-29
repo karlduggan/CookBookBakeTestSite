@@ -129,18 +129,11 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref } from 'vue';
+import { useCart } from '../../composables/useCart';
 
-let cart: any = null;
+const cart = useCart();
 const isOpen = inject('cartOpen', false) as any;
-
-// Lazy load store on mount
-onMounted(async () => {
-  if (!cart) {
-    const { useCartStore } = await import('../../stores/cart');
-    cart = useCartStore();
-  }
-});
 
 const close = () => {
   isOpen.value = false;

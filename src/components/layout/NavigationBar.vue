@@ -73,26 +73,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
 
 const isMenuOpen = ref(false);
-const cartStore = useCartStore();
+const cart = useCart();
 const cartCount = ref(0);
 
-// Update cart count
+// Update cart count from store
 const updateCartCount = () => {
-  if (typeof window !== 'undefined' && localStorage) {
-    try {
-      const cart = localStorage.getItem('cart');
-      if (cart) {
-        const items = JSON.parse(cart);
-        cartCount.value = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-      } else {
-        cartCount.value = 0;
-      }
-    } catch (e) {
-      cartCount.value = 0;
-    }
+  try {
+    cartCount.value = cart.itemCount;
+    console.log('[NavigationBar] Cart count updated:', cartCount.value);
+  } catch (e) {
+    console.error('[NavigationBar] Error updating cart count:', e);
+    cartCount.value = 0;
   }
 };
 
@@ -104,7 +98,7 @@ onMounted(() => {
   window.addEventListener('cart-updated', updateCartCount);
 
   // Also subscribe to store changes
-  cartStore.$subscribe(() => {
+  cart.$subscribe(() => {
     updateCartCount();
   });
 

@@ -142,7 +142,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useCartStore } from '../../stores/cart';
+import { useCart } from '../../composables/useCart';
 import { useAuthStore } from '../../stores/auth';
 
 const form = ref({
@@ -159,10 +159,13 @@ const form = ref({
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
-const cart = useCartStore();
+const cart = useCart();
 let auth: any = null;
 
-const hasItems = computed(() => cart.items.length > 0);
+const hasItems = computed(() => {
+  console.log('[CheckoutForm] hasItems computed, cart.items.length:', cart.items.length);
+  return cart.items.length > 0;
+});
 
 const handleSubmit = async () => {
   error.value = null;
@@ -228,8 +231,16 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
-  console.log('[CheckoutForm] Mounted, cart items:', cart.items.length);
+  // Force hydrate cart from localStorage
+  if (cart.hydrate) {
+    cart.hydrate();
+  }
+
+  console.log('[CheckoutForm] Mounted');
+  console.log('[CheckoutForm] Cart items from store:', cart.items.length);
+  console.log('[CheckoutForm] Cart items:', cart.items);
   console.log('[CheckoutForm] Cart total:', cart.total);
+  console.log('[CheckoutForm] localStorage cart:', localStorage.getItem('cart'));
 
   // Lazy load auth store on mount
   if (!auth) {
