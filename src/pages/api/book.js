@@ -34,25 +34,8 @@ export async function GET(context) {
       data = bookBySlug;
     }
 
-    // Get reviews if available
-    const { data: reviews } = await supabase
-      .from('reviews')
-      .select('rating, review_text, created_at')
-      .eq('book_id', data.id);
-
-    // Calculate average rating
-    const averageRating =
-      reviews && reviews.length > 0
-        ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-        : null;
-
     return successResponse({
-      book: {
-        ...data,
-        reviews: reviews || [],
-        averageRating,
-        reviewCount: reviews?.length || 0,
-      },
+      book: data,
     });
   } catch (error) {
     return serverError(error);
