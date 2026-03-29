@@ -48,15 +48,16 @@ export async function POST(context) {
     const { data: existingOrder, error: checkError } = await supabase
       .from('orders')
       .select('order_number')
-      .eq('stripe_payment_intent_id', sessionId)
-      .single();
+      .eq('stripe_payment_intent_id', sessionId);
 
-    if (!checkError && existingOrder) {
-      console.log('[save-order] Order already exists:', existingOrder.order_number);
+    if (!checkError && existingOrder && existingOrder.length > 0) {
+      console.log('[save-order] Order already exists:', existingOrder[0].order_number);
       return successResponse({
-        orderNumber: existingOrder.order_number,
+        orderNumber: existingOrder[0].order_number,
         sessionId: sessionId,
       });
+    } else if (checkError && checkError.code !== 'PGRST116') {
+      console.warn('[save-order] Check existing order error:', checkError);
     }
 
     // Generate custom order number

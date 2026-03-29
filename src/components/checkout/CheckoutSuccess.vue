@@ -171,16 +171,20 @@ onMounted(async () => {
 
       // Save order to database and get custom order number
       try {
+        console.log('[CheckoutSuccess] Calling save-order API for session:', sessionId.value);
         const saveOrderResponse = await fetch(`/api/checkout/save-order?session_id=${sessionId.value}`, {
           method: 'POST',
         });
-        const saveOrderData = await saveOrderResponse.json();
+        console.log('[CheckoutSuccess] Save-order response status:', saveOrderResponse.status);
 
-        if (saveOrderData.success) {
+        const saveOrderData = await saveOrderResponse.json();
+        console.log('[CheckoutSuccess] Save-order response data:', saveOrderData);
+
+        if (saveOrderData.success && saveOrderData.data?.orderNumber) {
           orderNumber.value = saveOrderData.data.orderNumber;
           console.log('[CheckoutSuccess] Order saved with number:', orderNumber.value);
         } else {
-          console.warn('[CheckoutSuccess] Failed to save order:', saveOrderData.error);
+          console.warn('[CheckoutSuccess] Failed to save order. Response:', saveOrderData);
           orderNumber.value = sessionId.value;
         }
       } catch (e) {
