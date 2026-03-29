@@ -121,6 +121,10 @@ export const useCartStore = defineStore('cart', () => {
     }
   };
 
+  const isInCart = (bookId: string) => {
+    return items.value.some((item) => item.bookId === bookId);
+  };
+
   return {
     // State
     items,
@@ -139,5 +143,6 @@ export const useCartStore = defineStore('cart', () => {
     clear,
     persist,
     hydrate,
+    isInCart,
   };
 });
