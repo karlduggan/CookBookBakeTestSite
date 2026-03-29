@@ -3,8 +3,7 @@ export const prerender = false;
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CheckoutForm from '../../components/checkout/CheckoutForm.vue';
-import CartSummary from '../../components/checkout/CartSummary.vue';
-import OrderTotals from '../../components/checkout/OrderTotals.vue';
+import OrderSummary from '../../components/checkout/OrderSummary.vue';
 ---
 
 <BaseLayout title="Checkout" description="Complete your purchase">
@@ -54,12 +53,7 @@ import OrderTotals from '../../components/checkout/OrderTotals.vue';
           <h2 class="text-xl font-bold text-accent-teal mb-6">Order Summary</h2>
 
           <div class="mb-6">
-            <CartSummary client:load />
-          </div>
-
-          <!-- Order Totals (Reactive) -->
-          <div class="mb-4">
-            <OrderTotals client:load />
+            <OrderSummary client:load />
           </div>
 
           <!-- Info Box -->
