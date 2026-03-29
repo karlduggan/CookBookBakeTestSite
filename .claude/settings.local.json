@@ -21,7 +21,9 @@
       "Bash(git push:*)",
       "Bash(git rm:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)"
     ]
   }
 }

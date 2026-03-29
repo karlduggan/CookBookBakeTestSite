@@ -4,6 +4,7 @@ export const prerender = false;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CheckoutForm from '../../components/checkout/CheckoutForm.vue';
 import CartSummary from '../../components/checkout/CartSummary.vue';
+import OrderTotals from '../../components/checkout/OrderTotals.vue';
 ---
 
 <BaseLayout title="Checkout" description="Complete your purchase">
@@ -56,27 +57,9 @@ import CartSummary from '../../components/checkout/CartSummary.vue';
             <CartSummary client:load />
           </div>
 
-          <!-- Subtotal -->
-          <div class="border-t border-text-muted pt-4 mb-4">
-            <div class="flex justify-between mb-2">
-              <span class="text-text-secondary">Subtotal:</span>
-              <span id="subtotal-amount" class="text-text-primary font-semibold">£0.00</span>
-            </div>
-
-            <div class="flex justify-between mb-2">
-              <span class="text-text-secondary">Shipping:</span>
-              <span id="shipping-amount" class="text-text-primary font-semibold">£0.00</span>
-            </div>
-
-            <div class="flex justify-between mb-4">
-              <span class="text-text-secondary">Tax (20%):</span>
-              <span id="tax-amount" class="text-text-primary font-semibold">£0.00</span>
-            </div>
-
-            <div class="flex justify-between border-t border-text-muted pt-4 text-lg">
-              <span class="font-bold text-text-primary">Total:</span>
-              <span id="total-amount" class="font-bold text-accent-teal">£0.00</span>
-            </div>
+          <!-- Order Totals (Reactive) -->
+          <div class="mb-4">
+            <OrderTotals client:load />
           </div>
 
           <!-- Info Box -->
