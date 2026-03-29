@@ -3,52 +3,63 @@
     <!-- Subtotal -->
     <div class="flex justify-between mb-2">
       <span class="text-text-secondary">Subtotal:</span>
-      <span class="text-text-primary font-semibold" :key="`subtotal-${renderKey}`">£{{ cart.subtotal.toFixed(2) }}</span>
+      <span class="text-text-primary font-semibold">£{{ subtotal }}</span>
     </div>
 
     <!-- Shipping -->
     <div class="flex justify-between mb-2">
       <span class="text-text-secondary">Shipping:</span>
-      <span class="text-text-primary font-semibold" :key="`shipping-${renderKey}`">£{{ cart.shipping.toFixed(2) }}</span>
+      <span class="text-text-primary font-semibold">£{{ shipping }}</span>
     </div>
 
     <!-- Tax -->
     <div class="flex justify-between mb-4">
       <span class="text-text-secondary">Tax (20%):</span>
-      <span class="text-text-primary font-semibold" :key="`tax-${renderKey}`">£{{ cart.tax.toFixed(2) }}</span>
+      <span class="text-text-primary font-semibold">£{{ tax }}</span>
     </div>
 
     <!-- Total -->
     <div class="flex justify-between border-t border-text-muted pt-4 text-lg">
       <span class="font-bold text-text-primary">Total:</span>
-      <span class="font-bold text-accent-teal" :key="`total-${renderKey}`">£{{ cart.total.toFixed(2) }}</span>
+      <span class="font-bold text-accent-teal">£{{ total }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
 const cart = useCartStore();
-const renderKey = ref(0);
 
-// Force re-render by updating key
-const forceUpdate = () => {
-  renderKey.value++;
-};
+// Create computed properties that depend on items length to force reactivity
+const subtotal = computed(() => {
+  return cart.subtotal.toFixed(2);
+});
 
-// Set up reactivity after mount
+const shipping = computed(() => {
+  return cart.shipping.toFixed(2);
+});
+
+const tax = computed(() => {
+  return cart.tax.toFixed(2);
+});
+
+const total = computed(() => {
+  return cart.total.toFixed(2);
+});
+
+// Ensure store subscription is set up
 onMounted(() => {
-  // Listen for cart updates from other components
-  const handleCartUpdate = () => {
-    forceUpdate();
-  };
+  console.log('[OrderTotals] Mounted, items:', cart.items.length);
 
-  window.addEventListener('cart-updated', handleCartUpdate);
+  // Subscribe to all store changes
+  const unsubscribe = cart.$subscribe((mutation, state) => {
+    console.log('[OrderTotals] Store mutated, items count:', state.items.length, 'subtotal:', state.subtotal);
+  });
 
   return () => {
-    window.removeEventListener('cart-updated', handleCartUpdate);
+    unsubscribe();
   };
 });
 </script>
