@@ -11,7 +11,7 @@ let bookData: any = null;
 let error = null;
 
 try {
-  const response = await fetch(`${process.env.PUBLIC_SITE_URL || 'http://localhost:3000'}/api/book?id=${slug}`);
+  const response = await fetch(`/api/book?id=${slug}`);
   const data = await response.json();
 
   if (data.success) {
@@ -26,7 +26,7 @@ try {
 
 // If book not found, return 404
 if (error || !bookData) {
-  return Astro.response.status = 404;
+  throw new Error('Book not found');
 }
 
 const stockStatus = bookData.stock_quantity > 5 ? 'in-stock' : bookData.stock_quantity > 0 ? 'low-stock' : 'out-of-stock';
