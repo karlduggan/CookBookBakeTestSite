@@ -3,6 +3,8 @@ import { stripe } from '../../../lib/api-utils/stripe.js';
 import { successResponse, validationError, serverError, unauthorizedError } from '../../../lib/api-utils/response.js';
 import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 
+export const prerender = false;
+
 export async function POST(context) {
   try {
     console.log('[create-session] POST request received');
