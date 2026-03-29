@@ -2,7 +2,7 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <!-- Cart Validation -->
     <div v-if="!hasItems" class="p-4 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg text-yellow-400">
-      Your cart is empty (cartItemsLength={{ cartItemsLength }}, cart.items.length={{ cart?.items?.length || 0 }}). <a href="/shop" class="underline">Continue shopping</a>
+      Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
     </div>
 
     <!-- Debug: Show cart items count -->
@@ -127,11 +127,6 @@
     <!-- Error Message -->
     <div v-if="error" class="p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-400">
       {{ error }}
-    </div>
-
-    <!-- Debug: Show loading state -->
-    <div class="text-xs text-gray-500 text-center">
-      [DEBUG: isLoading={{ isLoading }}, hasItems={{ hasItems }}, disabled={{ isLoading || !hasItems }}]
     </div>
 
     <!-- Submit Button -->
