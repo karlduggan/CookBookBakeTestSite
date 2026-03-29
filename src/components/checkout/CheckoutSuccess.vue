@@ -176,6 +176,12 @@ onMounted(async () => {
         const cart = useCartStore();
         cart.clear();
         console.log('[CheckoutSuccess] Cart cleared after successful payment');
+
+        // Dispatch event to notify other components (like NavigationBar)
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('cart-updated'));
+          console.log('[CheckoutSuccess] Dispatched cart-updated event');
+        }
       } catch (e) {
         console.warn('[CheckoutSuccess] Could not clear cart:', e);
       }
