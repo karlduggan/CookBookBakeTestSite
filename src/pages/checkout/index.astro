@@ -3,6 +3,7 @@ export const prerender = false;
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CheckoutForm from '../../components/checkout/CheckoutForm.vue';
+import CartSummary from '../../components/checkout/CartSummary.vue';
 ---
 
 <BaseLayout title="Checkout" description="Complete your purchase">
@@ -51,9 +52,8 @@ import CheckoutForm from '../../components/checkout/CheckoutForm.vue';
         <div class="bg-primary-darkAlt rounded-lg p-6 border border-text-muted sticky top-24">
           <h2 class="text-xl font-bold text-accent-teal mb-6">Order Summary</h2>
 
-          <div id="cart-summary" class="space-y-4 mb-6">
-            <!-- Cart items will be populated here by the CheckoutForm component -->
-            <p class="text-text-secondary text-sm">Loading cart...</p>
+          <div class="mb-6">
+            <CartSummary client:load />
           </div>
 
           <!-- Subtotal -->
