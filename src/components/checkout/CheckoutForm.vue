@@ -10,6 +10,15 @@
       Cart has {{ cart.items.length }} item(s) - Total: £{{ cart.total.toFixed(2) }}
     </div>
 
+    <!-- Debug: Diagnostic info (remove in production) -->
+    <div class="p-3 bg-gray-500 bg-opacity-10 border border-gray-500 rounded-lg text-gray-600 text-xs space-y-1">
+      <p><strong>DEBUG:</strong></p>
+      <p>cartItemsLength ref: {{ cartItemsLength }}</p>
+      <p>cart.items.length: {{ cart?.items?.length || 0 }}</p>
+      <p>hasItems computed: {{ hasItems }}</p>
+      <p>cart.total: £{{ cart?.total?.toFixed(2) || '0.00' }}</p>
+    </div>
+
     <!-- Shipping Information -->
     <fieldset>
       <legend class="text-lg font-bold text-accent-teal mb-4">Shipping Address</legend>
@@ -263,18 +272,36 @@ const handleSubmit = async () => {
 
 onMounted(async () => {
   try {
+    // Check what's in localStorage FIRST
+    let localStorageCart = null;
+    if (typeof window !== 'undefined' && localStorage) {
+      localStorageCart = localStorage.getItem('cart');
+      console.log('[CheckoutForm] localStorage.getItem("cart"):', localStorageCart);
+      if (localStorageCart) {
+        try {
+          const parsed = JSON.parse(localStorageCart);
+          console.log('[CheckoutForm] Parsed localStorage cart:', parsed);
+          console.log('[CheckoutForm] Cart item count in localStorage:', parsed.length);
+        } catch (e) {
+          console.error('[CheckoutForm] Failed to parse localStorage cart:', e);
+        }
+      } else {
+        console.warn('[CheckoutForm] localStorage cart is empty or null');
+      }
+    }
+
     // Force hydrate cart from localStorage
+    console.log('[CheckoutForm] Calling cart.hydrate()...');
     if (cart && cart.hydrate) {
       cart.hydrate();
+      console.log('[CheckoutForm] Hydrate completed');
     }
 
     console.log('[CheckoutForm] Mounted');
     console.log('[CheckoutForm] Cart items from store:', cart?.items?.length || 0);
     console.log('[CheckoutForm] Cart items:', cart?.items);
     console.log('[CheckoutForm] Cart total:', cart?.total);
-    if (typeof window !== 'undefined' && localStorage) {
-      console.log('[CheckoutForm] localStorage cart:', localStorage.getItem('cart'));
-    }
+    console.log('[CheckoutForm] hasItems computed value:', hasItems.value);
   } catch (e) {
     console.error('[CheckoutForm] Error during mount:', e);
   }
