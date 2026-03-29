@@ -44,10 +44,11 @@ const stockStatus = bookData.stock_quantity > 5 ? 'in-stock' : bookData.stock_qu
       Back to Shop
     </a>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- Book Image -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Book Image and Cart Section -->
       <div class="md:col-span-1">
-        <div class="bg-primary-darkAlt rounded-lg overflow-hidden aspect-[2/3] sticky top-24">
+        <!-- Book Image -->
+        <div class="bg-primary-darkAlt rounded-lg overflow-hidden aspect-[2/3] mb-6 max-w-xs mx-auto md:mx-0">
           {bookData.cover_image_url ? (
             <img
               src={bookData.cover_image_url}
@@ -77,7 +78,7 @@ const stockStatus = bookData.stock_quantity > 5 ? 'in-stock' : bookData.stock_qu
       </div>
 
       <!-- Book Details -->
-      <div class="md:col-span-2">
+      <div class="md:col-span-1 lg:col-span-2">
         <!-- Title and Author -->
         <div class="mb-6">
           <h1 class="text-4xl font-bold text-accent-teal mb-2">

@@ -29,14 +29,6 @@
     >
       Out of Stock
     </button>
-
-    <!-- Wishlist -->
-    <button
-      type="button"
-      class="w-full py-3 px-4 border border-accent-teal text-accent-teal rounded-lg hover:bg-primary-light-alt transition-colors font-semibold cursor-pointer"
-    >
-      ♡ Save to Wishlist
-    </button>
   </div>
 </template>
 
