@@ -1,16 +1,19 @@
+export const prerender = false;
+
 import dotenv from 'dotenv';
 dotenv.config({ path: '/Users/cellsoftware/Documents/cookbookbake/.env.local' });
 
-import { createSupabaseAnonClient } from '../../lib/api-utils/supabase.js';
-import { successResponse, errorResponse, serverError, notFoundError } from '../../lib/api-utils/response.js';
+import { createSupabaseAnonClient } from '../../../lib/api-utils/supabase.js';
+import { successResponse, serverError, notFoundError } from '../../../lib/api-utils/response.js';
 
 export async function GET(context) {
   try {
-    const url = new URL(context.request.url);
-    const bookId = url.searchParams.get('id');
+    const { id } = context.params;
 
-    if (!bookId) {
-      return errorResponse('Missing book id', 'MISSING_PARAM', 400);
+    console.log('Book ID from params:', id);
+
+    if (!id) {
+      return new Response(JSON.stringify({ success: false, error: 'Missing book id' }), { status: 400 });
     }
 
     const supabase = createSupabaseAnonClient();
@@ -19,15 +22,15 @@ export async function GET(context) {
     let { data, error } = await supabase
       .from('books')
       .select('*,categories(id,name,slug,description)', { count: 'exact' })
-      .eq('id', bookId)
+      .eq('id', id)
       .single();
 
-    // If not found by ID, try by slugified title
+    // If not found by ID, try by title
     if (error || !data) {
       const { data: bookBySlug, error: slugError } = await supabase
         .from('books')
         .select('*,categories(id,name,slug,description)', { count: 'exact' })
-        .ilike('title', `%${bookId}%`)
+        .ilike('title', `%${id}%`)
         .single();
 
       if (slugError || !bookBySlug) {

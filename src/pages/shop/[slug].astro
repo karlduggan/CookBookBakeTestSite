@@ -11,7 +11,9 @@ let bookData: any = null;
 let error = null;
 
 try {
-  const response = await fetch(`/api/book?id=${slug}`);
+  const fetchUrl = `http://${Astro.url.host}/api/book/${encodeURIComponent(slug)}`;
+  console.log('Fetching from:', fetchUrl);
+  const response = await fetch(fetchUrl);
   const data = await response.json();
 
   if (data.success) {
