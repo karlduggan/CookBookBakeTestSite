@@ -33,7 +33,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <p class="text-text-secondary mb-1">Order Number</p>
-            <p class="text-text-primary font-semibold">{{ sessionId }}</p>
+            <p class="text-text-primary font-semibold">{{ orderNumber }}</p>
           </div>
 
           <div>
@@ -133,6 +133,7 @@ interface OrderDetails {
 }
 
 const sessionId = ref<string>('');
+const orderNumber = ref<string>('');
 const orderDetails = ref<OrderDetails | null>(null);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
@@ -167,6 +168,25 @@ onMounted(async () => {
         sessionId: sessionId.value,
         ...data.data,
       };
+
+      // Save order to database and get custom order number
+      try {
+        const saveOrderResponse = await fetch(`/api/checkout/save-order?session_id=${sessionId.value}`, {
+          method: 'POST',
+        });
+        const saveOrderData = await saveOrderResponse.json();
+
+        if (saveOrderData.success) {
+          orderNumber.value = saveOrderData.data.orderNumber;
+          console.log('[CheckoutSuccess] Order saved with number:', orderNumber.value);
+        } else {
+          console.warn('[CheckoutSuccess] Failed to save order:', saveOrderData.error);
+          orderNumber.value = sessionId.value;
+        }
+      } catch (e) {
+        console.error('[CheckoutSuccess] Error saving order:', e);
+        orderNumber.value = sessionId.value;
+      }
 
       // Clear the cart after successful payment
       try {
