@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" @submit="() => console.log('[CheckoutForm] Form submitted')" class="space-y-6">
+  <form @submit.prevent="handleSubmit" class="space-y-6">
     <!-- Cart Validation -->
     <div v-if="!hasItems" class="p-4 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg text-yellow-400">
       Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
@@ -183,20 +183,23 @@ watch(
 );
 
 const handleSubmit = async () => {
+  console.log('[CHECKOUT] Button clicked! handleSubmit called');
   error.value = null;
 
   if (!hasItems.value) {
     error.value = 'Your cart is empty';
+    console.log('[CHECKOUT] Error: cart is empty');
     return;
   }
 
   if (!form.value.agreeToTerms) {
     error.value = 'You must agree to the terms and conditions';
+    console.log('[CHECKOUT] Error: must agree to terms');
     return;
   }
 
   isLoading.value = true;
-  console.log('[CheckoutForm] Starting checkout with', cart.items.length, 'items');
+  console.log('[CHECKOUT] Starting checkout with', cart.items.length, 'items');
 
   try {
     // Prepare checkout data
@@ -216,7 +219,7 @@ const handleSubmit = async () => {
       },
     };
 
-    console.log('[CheckoutForm] Sending checkout data:', checkoutData);
+    console.log('[CHECKOUT] Sending request to /api/checkout/create-session');
 
     // Create checkout session
     const response = await fetch('/api/checkout/create-session', {
@@ -228,35 +231,26 @@ const handleSubmit = async () => {
       credentials: 'include',
     });
 
-    console.log('[CheckoutForm] API response status:', response.status);
+    console.log('[CHECKOUT] API response status:', response.status);
 
     const data = await response.json();
-    console.log('[CheckoutForm] API response data:', data);
+    console.log('[CHECKOUT] API response:', data);
 
-    if (!response.ok) {
-      error.value = data.error || `API error: ${response.status} ${response.statusText}`;
-      console.error('[CheckoutForm] API error:', error.value);
+    if (!response.ok || !data.success) {
+      error.value = data.error || `Error: ${response.status}`;
+      console.error('[CHECKOUT] ERROR:', error.value);
       return;
     }
 
-    if (!data.success) {
-      error.value = data.error || 'Failed to create checkout session';
-      console.error('[CheckoutForm] Checkout failed:', error.value);
-      return;
-    }
-
-    // Redirect to Stripe Checkout
     if (data.data?.sessionUrl) {
-      console.log('[CheckoutForm] Redirecting to Stripe:', data.data.sessionUrl);
+      console.log('[CHECKOUT] Redirecting to Stripe checkout');
       window.location.href = data.data.sessionUrl;
     } else {
-      error.value = 'No checkout URL returned from server';
-      console.error('[CheckoutForm] Missing sessionUrl in response:', data);
+      error.value = 'No checkout URL from server';
     }
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : 'An error occurred';
-    error.value = errorMsg;
-    console.error('[CheckoutForm] Exception:', err);
+    error.value = err instanceof Error ? err.message : 'Error occurred';
+    console.error('[CHECKOUT] EXCEPTION:', err);
   } finally {
     isLoading.value = false;
   }
