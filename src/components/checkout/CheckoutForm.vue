@@ -5,6 +5,11 @@
       Your cart is empty. <a href="/shop" class="underline">Continue shopping</a>
     </div>
 
+    <!-- Debug: Show cart items count -->
+    <div v-if="cart.items.length > 0" class="p-3 bg-blue-500 bg-opacity-10 border border-blue-500 rounded-lg text-blue-400 text-sm">
+      Cart has {{ cart.items.length }} item(s) - Total: £{{ cart.total.toFixed(2) }}
+    </div>
+
     <!-- Shipping Information -->
     <fieldset>
       <legend class="text-lg font-bold text-accent-teal mb-4">Shipping Address</legend>
@@ -223,6 +228,9 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
+  console.log('[CheckoutForm] Mounted, cart items:', cart.items.length);
+  console.log('[CheckoutForm] Cart total:', cart.total);
+
   // Lazy load auth store on mount
   if (!auth) {
     const { useAuthStore } = await import('../../stores/auth');
