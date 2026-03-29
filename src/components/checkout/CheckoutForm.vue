@@ -307,6 +307,7 @@ onMounted(async () => {
     console.log('[CheckoutForm] Cart items:', cart?.items);
     console.log('[CheckoutForm] Cart total:', cart?.total);
     console.log('[CheckoutForm] hasItems computed value:', hasItems.value);
+    console.log('[CheckoutForm] Component fully mounted - button should be clickable');
 
     // Check form validity after DOM is ready
     await nextTick();

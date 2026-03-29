@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = import.meta.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 if (!JWT_SECRET) {
-  console.error('[auth.js] JWT_SECRET not found in environment');
+  console.error('[auth.js] JWT_SECRET not found in environment. Make sure it is set in .env.local');
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
