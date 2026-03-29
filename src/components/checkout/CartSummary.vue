@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <!-- Empty cart message -->
-    <div v-if="!cart || cart.items.length === 0" class="text-text-secondary text-center py-8">
+    <div v-if="cart.items.length === 0" class="text-text-secondary text-center py-8">
       Your cart is empty
     </div>
 
@@ -54,14 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useCartStore } from '../../stores/cart';
 
-let cart: any = null;
-
-onMounted(() => {
-  cart = useCartStore();
-});
+const cart = useCartStore();
 </script>
 
 <style scoped>
