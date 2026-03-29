@@ -4,21 +4,21 @@
  */
 
 export function getOrderConfirmationEmail(orderData: {
-  orderNumber: string;
-  customerEmail: string;
-  customerName: string;
-  items: Array<{ title: string; author: string; quantity: number; price: number }>;
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
+  orderNumber;
+  customerEmail;
+  customerName;
+  items;
+  subtotal;
+  shipping;
+  tax;
+  total;
   shippingAddress: {
-    name: string;
-    line1: string;
-    line2?: string;
-    city: string;
-    postcode: string;
-    country: string;
+    name;
+    line1;
+    line2?;
+    city;
+    postcode;
+    country;
   };
 }): string {
   const itemsHtml = orderData.items
@@ -26,7 +26,7 @@ export function getOrderConfirmationEmail(orderData: {
       (item) => `
     <tr style="border-bottom: 1px solid #f0f0f0;">
       <td style="padding: 12px; text-align: left;">
-        <strong>${item.title}</strong><br>
+        ${item.title}</strong>
         <span style="color: #666; font-size: 14px;">by ${item.author}</span>
       </td>
       <td style="padding: 12px; text-align: center;">${item.quantity}</td>
@@ -39,10 +39,9 @@ export function getOrderConfirmationEmail(orderData: {
 
   return `
 <!DOCTYPE html>
-<html>
-<head>
+
   <meta charset="utf-8">
-  <style>
+  
     body {
       font-family: 'Karla', Arial, sans-serif;
       line-height: 1.6;
@@ -165,11 +164,11 @@ export function getOrderConfirmationEmail(orderData: {
     }
   </style>
 </head>
-<body>
+
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>✓ Order Confirmed!</h1>
+      ✓ Order Confirmed!</h1>
       <p style="margin: 10px 0 0 0; font-size: 14px;">Thank you for your purchase, ${orderData.customerName}</p>
     </div>
 
@@ -179,11 +178,11 @@ export function getOrderConfirmationEmail(orderData: {
       <div class="order-details">
         <div class="order-info">
           <div class="info-item">
-            <strong>Order Number</strong>
+            Order Number</strong>
             ${orderData.orderNumber}
           </div>
           <div class="info-item">
-            <strong>Order Date</strong>
+            Order Date</strong>
             ${new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
         </div>
@@ -191,16 +190,16 @@ export function getOrderConfirmationEmail(orderData: {
 
       <!-- Items Table -->
       <h2 style="color: #90C2DD; font-size: 18px; margin-top: 30px;">Order Items</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Book</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
+      
+        
+          
+            Book</th>
+            Qty</th>
+            Price</th>
+            Total</th>
           </tr>
         </thead>
-        <tbody>
+        
           ${itemsHtml}
         </tbody>
       </table>
@@ -208,46 +207,46 @@ export function getOrderConfirmationEmail(orderData: {
       <!-- Summary -->
       <div class="summary">
         <div class="summary-row">
-          <span>Subtotal:</span>
-          <span>£${orderData.subtotal.toFixed(2)}</span>
+          Subtotal:</span>
+          £${orderData.subtotal.toFixed(2)}</span>
         </div>
         <div class="summary-row">
-          <span>Shipping:</span>
-          <span>£${orderData.shipping.toFixed(2)}</span>
+          Shipping:</span>
+          £${orderData.shipping.toFixed(2)}</span>
         </div>
         <div class="summary-row">
-          <span>Tax (20%):</span>
-          <span>£${orderData.tax.toFixed(2)}</span>
+          Tax (20%):</span>
+          £${orderData.tax.toFixed(2)}</span>
         </div>
         <div class="summary-row total">
-          <span>Total:</span>
-          <span>£${orderData.total.toFixed(2)}</span>
+          Total:</span>
+          £${orderData.total.toFixed(2)}</span>
         </div>
       </div>
 
       <!-- Shipping Address -->
       <h3 style="color: #90C2DD; margin-top: 30px;">Shipping Address</h3>
       <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; font-size: 14px; color: #666;">
-        <strong>${orderData.shippingAddress.name}</strong><br>
-        ${orderData.shippingAddress.line1}<br>
-        ${orderData.shippingAddress.line2 ? orderData.shippingAddress.line2 + '<br>' : ''}
-        ${orderData.shippingAddress.city}, ${orderData.shippingAddress.postcode}<br>
+        ${orderData.shippingAddress.name}</strong>
+        ${orderData.shippingAddress.line1}
+        ${orderData.shippingAddress.line2 ? orderData.shippingAddress.line2 + '' : ''}
+        ${orderData.shippingAddress.city}, ${orderData.shippingAddress.postcode}
         ${orderData.shippingAddress.country}
       </div>
 
       <!-- Next Steps -->
       <div class="next-steps">
-        <h3>What's Next?</h3>
-        <ol>
-          <li><strong>Confirmation Email:</strong> You'll receive a detailed confirmation email shortly with tracking information.</li>
-          <li><strong>Order Processing:</strong> We'll prepare your order for dispatch within 1-2 business days.</li>
-          <li><strong>Shipment Notification:</strong> You'll receive an email with tracking details once your books are dispatched.</li>
-          <li><strong>Delivery:</strong> Your books will arrive within 3-5 business days from dispatch.</li>
+        What's Next?</h3>
+        
+          Confirmation Email:</strong> You'll receive a detailed confirmation email shortly with tracking information.</li>
+          Order Processing:</strong> We'll prepare your order for dispatch within 1-2 business days.</li>
+          Shipment Notification:</strong> You'll receive an email with tracking details once your books are dispatched.</li>
+          Delivery:</strong> Your books will arrive within 3-5 business days from dispatch.</li>
         </ol>
       </div>
 
       <p style="color: #666; font-size: 14px; margin-top: 20px;">
-        You can view your order anytime by logging into your account at <strong>cookbookbake.co.uk/account</strong>
+        You can view your order anytime by logging into your account at cookbookbake.co.uk/account</strong>
       </p>
     </div>
 
@@ -269,15 +268,14 @@ export function getOrderConfirmationEmail(orderData: {
 }
 
 export function getVerificationEmail(data: {
-  customerName: string;
-  verificationLink: string;
+  customerName;
+  verificationLink;
 }): string {
   return `
 <!DOCTYPE html>
-<html>
-<head>
+
   <meta charset="utf-8">
-  <style>
+  
     body {
       font-family: 'Karla', Arial, sans-serif;
       line-height: 1.6;
@@ -318,31 +316,31 @@ export function getVerificationEmail(data: {
     }
   </style>
 </head>
-<body>
+
   <div class="container">
     <div class="header">
-      <h1>Welcome to Cook Book Bake!</h1>
+      Welcome to Cook Book Bake!</h1>
     </div>
 
     <div class="content">
-      <p>Hi ${data.customerName},</p>
+      Hi ${data.customerName},</p>
 
-      <p>Thank you for creating an account with Cook Book Bake. To complete your registration and start shopping, please verify your email address by clicking the button below:</p>
+      Thank you for creating an account with Cook Book Bake. To complete your registration and start shopping, please verify your email address by clicking the button below:</p>
 
       <div style="text-align: center;">
         <a href="${data.verificationLink}" class="button">Verify Email Address</a>
       </div>
 
       <p style="color: #666; font-size: 14px;">
-        Or copy and paste this link in your browser:<br>
+        Or copy and paste this link in your browser:
         <span style="word-break: break-all;">${data.verificationLink}</span>
       </p>
 
-      <p>This link will expire in 24 hours.</p>
+      This link will expire in 24 hours.</p>
 
-      <p>If you didn't create this account, you can safely ignore this email.</p>
+      If you didn't create this account, you can safely ignore this email.</p>
 
-      <p>Happy reading!<br><strong>Cook Book Bake Team</strong></p>
+      Happy reading!Cook Book Bake Team</strong></p>
     </div>
 
     <div class="footer">
@@ -355,15 +353,14 @@ export function getVerificationEmail(data: {
 }
 
 export function getPasswordResetEmail(data: {
-  customerName: string;
-  resetLink: string;
+  customerName;
+  resetLink;
 }): string {
   return `
 <!DOCTYPE html>
-<html>
-<head>
+
   <meta charset="utf-8">
-  <style>
+  
     body {
       font-family: 'Karla', Arial, sans-serif;
       line-height: 1.6;
@@ -412,31 +409,31 @@ export function getPasswordResetEmail(data: {
     }
   </style>
 </head>
-<body>
+
   <div class="container">
     <div class="header">
-      <h1>Password Reset</h1>
+      Password Reset</h1>
     </div>
 
     <div class="content">
-      <p>Hi ${data.customerName},</p>
+      Hi ${data.customerName},</p>
 
-      <p>We received a request to reset the password for your Cook Book Bake account. Click the button below to reset your password:</p>
+      We received a request to reset the password for your Cook Book Bake account. Click the button below to reset your password:</p>
 
       <div style="text-align: center;">
         <a href="${data.resetLink}" class="button">Reset Password</a>
       </div>
 
       <p style="color: #666; font-size: 14px;">
-        Or copy and paste this link:<br>
+        Or copy and paste this link:
         <span style="word-break: break-all;">${data.resetLink}</span>
       </p>
 
       <div class="warning">
-        <strong>⚠️ Security Notice:</strong> This link will expire in 1 hour. If you didn't request a password reset, please ignore this email or contact our support team immediately.
+        ⚠️ Security Notice:</strong> This link will expire in 1 hour. If you didn't request a password reset, please ignore this email or contact our support team immediately.
       </div>
 
-      <p>For security reasons, never share this link with anyone.</p>
+      For security reasons, never share this link with anyone.</p>
     </div>
 
     <div class="footer">

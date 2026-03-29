@@ -8,7 +8,7 @@ if (!STRIPE_SECRET_KEY) {
 
 // Initialize Stripe
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: '2024-04-10' as any, // Use stable API version
+  apiVersion: '2024-04-10', // Use stable API version
 });
 
 export { stripe };
@@ -17,22 +17,12 @@ export { stripe };
  * Create a Stripe Checkout session
  */
 export const createCheckoutSession = async (params: {
-  lineItems: Array<{
-    price_data: {
-      currency: string;
-      unit_amount: number;
-      product_data: {
-        name: string;
-        images?: string[];
-      };
-    };
-    quantity: number;
-  }>;
-  customerEmail?: string;
-  userId?: string;
-  successUrl: string;
-  cancelUrl: string;
-  metadata?: Record<string, string>;
+  lineItems;
+  customerEmail?;
+  userId?;
+  successUrl;
+  cancelUrl;
+  metadata?;
 }) => {
   return stripe.checkout.sessions.create({
     payment_method_types: ['card'],
@@ -52,9 +42,9 @@ export const createCheckoutSession = async (params: {
  * Verify webhook signature
  */
 export const verifyWebhookSignature = (
-  body: string,
-  signature: string,
-  secret: string
+  body,
+  signature,
+  secret
 ): Stripe.Event | null => {
   try {
     return stripe.webhooks.constructEvent(body, signature, secret);
@@ -67,14 +57,14 @@ export const verifyWebhookSignature = (
 /**
  * Get Stripe customer by ID
  */
-export const getCustomer = (customerId: string) => {
+export const getCustomer = (customerId) => {
   return stripe.customers.retrieve(customerId);
 };
 
 /**
  * Create or retrieve Stripe customer
  */
-export const getOrCreateCustomer = async (email: string, customerId?: string) => {
+export const getOrCreateCustomer = async (email, customerId?) => {
   // If we already have a customer ID, retrieve it
   if (customerId) {
     return stripe.customers.retrieve(customerId);

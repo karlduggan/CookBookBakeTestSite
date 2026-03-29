@@ -1,4 +1,3 @@
-import { Handler } from '@netlify/functions';
 import bcrypt from 'bcryptjs';
 import { createSupabaseClient } from '../utils/supabase.js';
 import {
@@ -11,14 +10,7 @@ import {
 } from '../utils/response';
 import { generateTokens, setTokenCookie } from '../utils/auth.js';
 
-interface RegisterRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}
-
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return {
@@ -27,7 +19,7 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const body = JSON.parse(event.body || '{}') as RegisterRequest;
+    const body = JSON.parse(event.body || '{}');
 
     // Validate required fields
     const missingField = validateRequired(body, ['email', 'password', 'firstName', 'lastName']);
@@ -111,7 +103,7 @@ const handler: Handler = async (event) => {
       }),
     };
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

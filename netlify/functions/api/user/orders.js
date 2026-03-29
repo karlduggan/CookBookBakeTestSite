@@ -1,9 +1,8 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseClient } from '../utils/supabase.js';
 import { successResponse, unauthorizedError, serverError } from '../utils/response.js';
 import { authenticateRequest } from '../utils/auth.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'GET') {
       return {
@@ -13,7 +12,7 @@ const handler: Handler = async (event) => {
     }
 
     // Authenticate request
-    const auth = authenticateRequest(event.headers as Record<string, string | string[] | undefined>);
+    const auth = authenticateRequest(event.headers, string | string[] | undefined>);
 
     if (!auth.isAuthenticated || !auth.user) {
       return unauthorizedError();
@@ -49,7 +48,7 @@ const handler: Handler = async (event) => {
     }
 
     return successResponse({
-      orders: (orders || []).map((order: any) => ({
+      orders: (orders || []).map((order) => ({
         id: order.id,
         orderNumber: order.order_number,
         totalAmount: order.total_amount,
@@ -61,7 +60,7 @@ const handler: Handler = async (event) => {
       })),
     });
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

@@ -4,24 +4,10 @@
  * Can be integrated with Resend, SendGrid, or other email services
  */
 
-interface OrderEmailData {
-  orderNumber: string;
-  email: string;
-  firstName: string;
-  items: Array<{
-    title: string;
-    author: string;
-    quantity: number;
-    price: number;
-  }>;
-  total: number;
-  shippingAddress: string;
-}
-
 /**
  * Send order confirmation email
  */
-export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
+export const sendOrderConfirmationEmail = async (data) => {
   // Placeholder implementation
   // In production, integrate with Resend, SendGrid, or similar service
 
@@ -50,7 +36,7 @@ export const sendOrderConfirmationEmail = async (data: OrderEmailData) => {
 /**
  * Send verification email
  */
-export const sendVerificationEmail = async (email: string, token: string) => {
+export const sendVerificationEmail = async (email, token) => {
   const verificationUrl = `${process.env.PUBLIC_SITE_URL}/verify-email?token=${token}`;
 
   console.log('Sending verification email:', {
@@ -67,7 +53,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 /**
  * Send password reset email
  */
-export const sendPasswordResetEmail = async (email: string, token: string) => {
+export const sendPasswordResetEmail = async (email, token) => {
   const resetUrl = `${process.env.PUBLIC_SITE_URL}/reset-password?token=${token}`;
 
   console.log('Sending password reset email:', {
@@ -85,10 +71,10 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
  * Send order status update email
  */
 export const sendOrderStatusEmail = async (
-  email: string,
-  orderNumber: string,
-  status: string,
-  trackingUrl?: string
+  email,
+  orderNumber,
+  status,
+  trackingUrl?
 ) => {
   console.log('Sending order status email:', {
     to: email,
@@ -105,13 +91,13 @@ export const sendOrderStatusEmail = async (
 /**
  * Generate HTML for order confirmation email
  */
-function generateOrderConfirmationHTML(data: OrderEmailData): string {
+function generateOrderConfirmationHTML(data): string {
   const itemsHTML = data.items
     .map(
       (item) => `
-    <tr>
+    
       <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-        <strong>${item.title}</strong><br>
+        ${item.title}</strong>
         by ${item.author}
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">
@@ -126,28 +112,28 @@ function generateOrderConfirmationHTML(data: OrderEmailData): string {
     .join('');
 
   return `
-    <div style="font-family: Karla, Arial, sans-serif; background: #0A0A0A; color: #FFFFFF; padding: 20px;">
+    <div style="font-family, Arial, sans-serif; background: #0A0A0A; color: #FFFFFF; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto;">
         <h1 style="color: #90C2DD; margin-bottom: 20px;">Order Confirmation</h1>
 
-        <p>Dear ${data.firstName},</p>
+        Dear ${data.firstName},</p>
 
-        <p>Thank you for your order! Here are your order details:</p>
+        Thank you for your order! Here are your order details:</p>
 
         <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p><strong>Order Number:</strong> ${data.orderNumber}</p>
-          <p><strong>Shipping Address:</strong><br>${data.shippingAddress}</p>
+          Order Number:</strong> ${data.orderNumber}</p>
+          Shipping Address:</strong>${data.shippingAddress}</p>
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          <thead>
+          
             <tr style="background: #004a66;">
               <th style="padding: 10px; text-align: left;">Item</th>
               <th style="padding: 10px; text-align: right;">Qty</th>
               <th style="padding: 10px; text-align: right;">Price</th>
             </tr>
           </thead>
-          <tbody>
+          
             ${itemsHTML}
             <tr style="font-weight: bold; font-size: 16px; border-top: 2px solid #90C2DD;">
               <td colspan="2" style="padding: 15px; text-align: right;">Total:</td>
@@ -156,13 +142,13 @@ function generateOrderConfirmationHTML(data: OrderEmailData): string {
           </tbody>
         </table>
 
-        <p>You will receive another email when your order is dispatched.</p>
+        You will receive another email when your order is dispatched.</p>
 
-        <p>Thank you for shopping at Cook Book Bake!</p>
+        Thank you for shopping at Cook Book Bake!</p>
 
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #BBBBBB; color: #DEDEDE; font-size: 12px;">
-          <p>Cook Book Bake<br>
-          7 Victoria Terrace, Hove, BN3 2WB<br>
+          Cook Book Bake
+          7 Victoria Terrace, Hove, BN3 2WB
           01273 779520</p>
         </div>
       </div>

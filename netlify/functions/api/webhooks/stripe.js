@@ -1,11 +1,10 @@
-import { Handler } from '@netlify/functions';
 import { stripe } from '../utils/stripe.js';
 import { createSupabaseClient } from '../utils/supabase.js';
 import { sendOrderConfirmationEmail } from '../utils/email.js';
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return {
@@ -14,7 +13,7 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const signature = event.headers['stripe-signature'] as string;
+    const signature = event.headers['stripe-signature'];
     if (!signature) {
       return {
         statusCode: 400,
@@ -40,7 +39,7 @@ const handler: Handler = async (event) => {
 
     // Handle checkout.session.completed event
     if (stripeEvent.type === 'checkout.session.completed') {
-      const session = stripeEvent.data.object as any;
+      const session = stripeEvent.data.object;
 
       // Prevent duplicate processing
       const supabase = createSupabaseClient();
@@ -90,8 +89,8 @@ const handler: Handler = async (event) => {
         .from('orders')
         .insert({
           order_number: orderNumber,
-          user_id: userId !== 'guest' ? userId : null,
-          guest_email: userId === 'guest' ? email : null,
+          user_id: userId !== 'guest' ? userId ,
+          guest_email: userId === 'guest' ? email ,
           total_amount: total,
           status: 'payment_received',
           stripe_payment_intent_id: session.payment_intent,

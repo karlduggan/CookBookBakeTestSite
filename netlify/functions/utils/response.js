@@ -1,14 +1,9 @@
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  code?: string;
-}
+
 
 /**
  * Create a successful API response
  */
-export const successResponse = <T,>(data: T, statusCode = 200) => {
+export const successResponse = (data, statusCode = 200) => {
   return {
     statusCode,
     headers: {
@@ -18,14 +13,14 @@ export const successResponse = <T,>(data: T, statusCode = 200) => {
     body: JSON.stringify({
       success: true,
       data,
-    } as ApiResponse<T>),
+    }),
   };
 };
 
 /**
  * Create an error API response
  */
-export const errorResponse = (error: string, code = 'ERROR', statusCode = 400) => {
+export const errorResponse = (error, code = 'ERROR', statusCode = 400) => {
   return {
     statusCode,
     headers: {
@@ -36,14 +31,14 @@ export const errorResponse = (error: string, code = 'ERROR', statusCode = 400) =
       success: false,
       error,
       code,
-    } as ApiResponse),
+    }),
   };
 };
 
 /**
  * Create a validation error response
  */
-export const validationError = (error: string) => {
+export const validationError = (error) => {
   return errorResponse(error, 'VALIDATION_ERROR', 400);
 };
 
@@ -71,7 +66,7 @@ export const notFoundError = (resource = 'Resource') => {
 /**
  * Create a server error response
  */
-export const serverError = (error: string | Error) => {
+export const serverError = (error) => {
   const message = error instanceof Error ? error.message : error;
   console.error('Server error:', message);
   return errorResponse('Internal server error', 'SERVER_ERROR', 500);
@@ -81,9 +76,9 @@ export const serverError = (error: string | Error) => {
  * Validate required fields
  */
 export const validateRequired = (
-  data: Record<string, any>,
-  fields: string[]
-): string | null => {
+  data,
+  fields
+) => {
   for (const field of fields) {
     if (!data[field]) {
       return `Missing required field: ${field}`;
@@ -95,7 +90,7 @@ export const validateRequired = (
 /**
  * Validate email format
  */
-export const validateEmail = (email: string): boolean => {
+export const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
@@ -103,11 +98,8 @@ export const validateEmail = (email: string): boolean => {
 /**
  * Validate password strength
  */
-export const validatePassword = (password: string): {
-  valid: boolean;
-  errors: string[];
-} => {
-  const errors: string[] = [];
+export const validatePassword = (password) => {
+  const errors = [];
 
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters long');

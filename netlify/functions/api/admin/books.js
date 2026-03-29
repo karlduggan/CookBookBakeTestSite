@@ -6,7 +6,7 @@ import { successResponse, errorResponse, validationError, unauthorizedError, not
 // PUT /api/admin/books/:id - Update book
 // DELETE /api/admin/books/:id - Delete book
 
-export default async (req: Request) => {
+export default async (req) => {
   try {
     const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
 
@@ -40,7 +40,7 @@ export default async (req: Request) => {
   }
 };
 
-async function createBook(req: Request, supabase: any) {
+async function createBook(req, supabase) {
   try {
     const body = await req.json();
 
@@ -79,7 +79,7 @@ async function createBook(req: Request, supabase: any) {
   }
 }
 
-async function updateBook(req: Request, supabase: any, bookId: string) {
+async function updateBook(req, supabase, bookId) {
   try {
     const body = await req.json();
 
@@ -103,7 +103,7 @@ async function updateBook(req: Request, supabase: any, bookId: string) {
       return validationError('Stock quantity must be non-negative');
     }
 
-    const updateData: any = {};
+    const updateData = {};
     if (body.title !== undefined) updateData.title = body.title;
     if (body.author !== undefined) updateData.author = body.author;
     if (body.isbn !== undefined) updateData.isbn = body.isbn;
@@ -131,7 +131,7 @@ async function updateBook(req: Request, supabase: any, bookId: string) {
   }
 }
 
-async function deleteBook(supabase: any, bookId: string) {
+async function deleteBook(supabase, bookId) {
   try {
     // Check if book exists
     const { data: existingBook, error: fetchError } = await supabase
@@ -155,7 +155,7 @@ async function deleteBook(supabase: any, bookId: string) {
   }
 }
 
-async function getAllBooks(supabase: any) {
+async function getAllBooks(supabase) {
   try {
     const { data, error } = await supabase
       .from('books')
@@ -171,7 +171,7 @@ async function getAllBooks(supabase: any) {
   }
 }
 
-function forbiddenError(message: string) {
+function forbiddenError(message) {
   return new Response(
     JSON.stringify({
       success: false,

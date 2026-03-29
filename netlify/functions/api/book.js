@@ -1,8 +1,7 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseAnonClient } from './utils/supabase.js';
 import { successResponse, errorResponse, serverError, notFoundError } from './utils/response.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
@@ -29,7 +28,7 @@ const handler: Handler = async (event) => {
 
     const supabase = createSupabaseAnonClient();
 
-    // Try to fetch by UUID first, then by slug (using title as slug)
+    // Try to fetch by UUID first, then by slug (using title)
     let { data, error } = await supabase
       .from('books')
       .select('*,categories(id,name,slug,description)', { count: 'exact' })
@@ -61,7 +60,7 @@ const handler: Handler = async (event) => {
     const averageRating =
       reviews && reviews.length > 0
         ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-        : null;
+        ;
 
     return successResponse({
       book: {
@@ -72,7 +71,7 @@ const handler: Handler = async (event) => {
       },
     });
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

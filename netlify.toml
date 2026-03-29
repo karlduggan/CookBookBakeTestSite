@@ -19,6 +19,7 @@ status = 200
 
 [functions]
 node_bundler = "esbuild"
+directory = "netlify/functions"
 external_node_modules = ["bcryptjs", "stripe", "dotenv", "jsonwebtoken"]
 
 [[headers]]

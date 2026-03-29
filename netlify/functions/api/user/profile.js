@@ -1,12 +1,11 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseClient } from '../utils/supabase.js';
 import { successResponse, unauthorizedError, serverError } from '../utils/response.js';
 import { authenticateRequest } from '../utils/auth.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     // Authenticate request
-    const auth = authenticateRequest(event.headers as Record<string, string | string[] | undefined>);
+    const auth = authenticateRequest(event.headers, string | string[] | undefined>);
 
     if (!auth.isAuthenticated || !auth.user) {
       return unauthorizedError();
@@ -70,7 +69,7 @@ const handler: Handler = async (event) => {
       body: JSON.stringify({ success: false, error: 'Method not allowed' }),
     };
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

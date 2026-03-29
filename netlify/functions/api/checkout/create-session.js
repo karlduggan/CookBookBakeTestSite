@@ -1,27 +1,9 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseClient } from '../utils/supabase.js';
 import { stripe } from '../utils/stripe.js';
 import { successResponse, validationError, serverError, unauthorizedError } from '../utils/response.js';
 import { authenticateRequest } from '../utils/auth.js';
 
-interface CheckoutRequest {
-  items: Array<{
-    bookId: string;
-    quantity: number;
-  }>;
-  shippingDetails: {
-    name: string;
-    email: string;
-    addressLine1: string;
-    addressLine2?: string;
-    city: string;
-    postcode: string;
-    country: string;
-  };
-  guestEmail?: string;
-}
-
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return {
@@ -30,7 +12,7 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const body = JSON.parse(event.body || '{}') as CheckoutRequest;
+    const body = JSON.parse(event.body || '{}');
 
     // Validate cart items
     if (!body.items || body.items.length === 0) {
@@ -43,8 +25,8 @@ const handler: Handler = async (event) => {
     }
 
     // Authenticate optional (allow guest checkout)
-    const auth = authenticateRequest(event.headers as Record<string, string | string[] | undefined>);
-    const userId = auth.isAuthenticated ? auth.user?.userId : null;
+    const auth = authenticateRequest(event.headers, string | string[] | undefined>);
+    const userId = auth.isAuthenticated ? auth.user?.userId ;
     const email = body.shippingDetails.email;
 
     const supabase = createSupabaseClient();
@@ -146,7 +128,7 @@ const handler: Handler = async (event) => {
     });
   } catch (error) {
     console.error('Checkout error:', error);
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

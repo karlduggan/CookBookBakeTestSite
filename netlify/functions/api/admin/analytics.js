@@ -4,7 +4,7 @@ import { successResponse, unauthorizedError, serverError } from '../../utils/res
 
 // GET /api/admin/analytics - Get sales analytics
 
-export default async (req: Request) => {
+export default async (req) => {
   try {
     const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
 
@@ -40,7 +40,7 @@ export default async (req: Request) => {
   }
 };
 
-async function getAnalytics(supabase: any) {
+async function getAnalytics(supabase) {
   // Get total orders
   const { data: ordersData, count: totalOrders } = await supabase
     .from('orders')
@@ -52,7 +52,7 @@ async function getAnalytics(supabase: any) {
     .select('total_amount')
     .eq('status', 'paid');
 
-  const totalRevenue = (paidOrders || []).reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0);
+  const totalRevenue = (paidOrders || []).reduce((sum, order) => sum + (order.total_amount || 0), 0);
 
   // Get total customers
   const { count: totalCustomers } = await supabase
@@ -101,7 +101,7 @@ async function getAnalytics(supabase: any) {
   };
 }
 
-function forbiddenError(message: string) {
+function forbiddenError(message) {
   return new Response(
     JSON.stringify({
       success: false,

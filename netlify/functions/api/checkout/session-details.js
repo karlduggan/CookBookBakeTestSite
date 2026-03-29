@@ -1,8 +1,7 @@
-import { Handler } from '@netlify/functions';
 import { stripe } from '../utils/stripe.js';
 import { successResponse, validationError, serverError } from '../utils/response.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'GET') {
       return {
@@ -34,7 +33,7 @@ const handler: Handler = async (event) => {
     });
   } catch (error) {
     console.error('Session details error:', error);
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

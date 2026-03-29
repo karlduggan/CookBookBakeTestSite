@@ -1,7 +1,6 @@
-import { Handler } from '@netlify/functions';
 import { clearTokenCookie } from '../utils/auth.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return {

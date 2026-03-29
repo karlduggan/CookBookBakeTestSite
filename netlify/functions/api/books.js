@@ -1,17 +1,7 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseAnonClient } from './utils/supabase.js';
 import { successResponse, errorResponse, serverError, validationError } from './utils/response.js';
 
-interface ListBooksQuery {
-  page?: string;
-  limit?: string;
-  category?: string;
-  search?: string;
-  featured?: string;
-  bestseller?: string;
-}
-
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
@@ -30,7 +20,7 @@ const handler: Handler = async (event) => {
       return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
     }
 
-    const query = event.queryStringParameters as unknown as ListBooksQuery;
+    const query = event.queryStringParameters;
     const page = parseInt(query?.page || '1', 10);
     const limit = Math.min(parseInt(query?.limit || '20', 10), 100);
     const offset = (page - 1) * limit;
@@ -85,7 +75,7 @@ const handler: Handler = async (event) => {
       },
     });
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

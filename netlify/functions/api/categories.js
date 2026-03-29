@@ -1,8 +1,7 @@
-import { Handler } from '@netlify/functions';
 import { createSupabaseAnonClient } from './utils/supabase.js';
 import { successResponse, serverError } from './utils/response.js';
 
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     // Handle CORS preflight
     if (event.httpMethod === 'OPTIONS') {
@@ -47,7 +46,7 @@ const handler: Handler = async (event) => {
       categories: data || [],
     });
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

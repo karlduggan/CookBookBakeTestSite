@@ -5,7 +5,7 @@ import { successResponse, errorResponse, validationError, unauthorizedError, not
 // GET /api/admin/orders - Get all orders
 // PUT /api/admin/orders/:id - Update order status
 
-export default async (req: Request) => {
+export default async (req) => {
   try {
     const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
 
@@ -35,7 +35,7 @@ export default async (req: Request) => {
   }
 };
 
-async function getAllOrders(req: Request, supabase: any) {
+async function getAllOrders(req, supabase) {
   try {
     const url = new URL(req.url);
     const status = url.searchParams.get('status');
@@ -84,7 +84,7 @@ async function getAllOrders(req: Request, supabase: any) {
   }
 }
 
-async function updateOrderStatus(req: Request, supabase: any, orderId: string) {
+async function updateOrderStatus(req, supabase, orderId) {
   try {
     const body = await req.json();
 
@@ -127,7 +127,7 @@ async function updateOrderStatus(req: Request, supabase: any, orderId: string) {
   }
 }
 
-function forbiddenError(message: string) {
+function forbiddenError(message) {
   return new Response(
     JSON.stringify({
       success: false,

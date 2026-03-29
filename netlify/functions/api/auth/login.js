@@ -1,15 +1,9 @@
-import { Handler } from '@netlify/functions';
 import bcrypt from 'bcryptjs';
 import { createSupabaseClient } from '../utils/supabase.js';
 import { successResponse, validationError, serverError, validateRequired, validateEmail } from '../utils/response.js';
 import { generateTokens, setTokenCookie } from '../utils/auth.js';
 
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-const handler: Handler = async (event) => {
+const handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return {
@@ -18,7 +12,7 @@ const handler: Handler = async (event) => {
       };
     }
 
-    const body = JSON.parse(event.body || '{}') as LoginRequest;
+    const body = JSON.parse(event.body || '{}');
 
     // Validate required fields
     const missingField = validateRequired(body, ['email', 'password']);
@@ -79,7 +73,7 @@ const handler: Handler = async (event) => {
       }),
     };
   } catch (error) {
-    return serverError(error as Error);
+    return serverError(error);
   }
 };
 

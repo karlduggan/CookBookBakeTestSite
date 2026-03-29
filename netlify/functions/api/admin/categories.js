@@ -7,7 +7,7 @@ import { successResponse, errorResponse, validationError, unauthorizedError, not
 // PUT /api/admin/categories/:id - Update category
 // DELETE /api/admin/categories/:id - Delete category
 
-export default async (req: Request) => {
+export default async (req) => {
   try {
     const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
 
@@ -41,7 +41,7 @@ export default async (req: Request) => {
   }
 };
 
-async function getAllCategories(supabase: any) {
+async function getAllCategories(supabase) {
   try {
     const { data, error } = await supabase
       .from('categories')
@@ -57,7 +57,7 @@ async function getAllCategories(supabase: any) {
   }
 }
 
-async function createCategory(req: Request, supabase: any) {
+async function createCategory(req, supabase) {
   try {
     const body = await req.json();
 
@@ -96,7 +96,7 @@ async function createCategory(req: Request, supabase: any) {
   }
 }
 
-async function updateCategory(req: Request, supabase: any, categoryId: string) {
+async function updateCategory(req, supabase, categoryId) {
   try {
     const body = await req.json();
 
@@ -111,7 +111,7 @@ async function updateCategory(req: Request, supabase: any, categoryId: string) {
       return notFoundError('Category not found');
     }
 
-    const updateData: any = {};
+    const updateData = {};
     if (body.name !== undefined) updateData.name = body.name;
     if (body.slug !== undefined) updateData.slug = body.slug;
     if (body.description !== undefined) updateData.description = body.description;
@@ -133,7 +133,7 @@ async function updateCategory(req: Request, supabase: any, categoryId: string) {
   }
 }
 
-async function deleteCategory(supabase: any, categoryId: string) {
+async function deleteCategory(supabase, categoryId) {
   try {
     // Check if category exists
     const { data: existing, error: checkError } = await supabase
@@ -167,7 +167,7 @@ async function deleteCategory(supabase: any, categoryId: string) {
   }
 }
 
-function forbiddenError(message: string) {
+function forbiddenError(message) {
   return new Response(
     JSON.stringify({
       success: false,
