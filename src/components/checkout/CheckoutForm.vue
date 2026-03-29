@@ -207,6 +207,10 @@ const handleSubmit = async () => {
   console.log('[CHECKOUT] Starting checkout with', cart.items.length, 'items');
 
   try {
+    console.log('[CHECKOUT] Creating checkout data...');
+    console.log('[CHECKOUT] cart.items:', cart.items);
+    console.log('[CHECKOUT] form values:', form.value);
+
     // Prepare checkout data
     const checkoutData = {
       items: cart.items.map((item) => ({
@@ -224,7 +228,7 @@ const handleSubmit = async () => {
       },
     };
 
-    console.log('[CHECKOUT] Checkout data:', checkoutData);
+    console.log('[CHECKOUT] ✅ Checkout data created:', checkoutData);
     const bodyJson = JSON.stringify(checkoutData);
     console.log('[CHECKOUT] Body JSON length:', bodyJson.length);
     console.log('[CHECKOUT] Sending request to /api/checkout/create-session');
