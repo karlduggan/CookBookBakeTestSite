@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useCart } from '../../composables/useCart';
 import { useAuthStore } from '../../stores/auth';
 
@@ -162,10 +162,24 @@ const isLoading = ref(false);
 const cart = useCart();
 let auth: any = null;
 
+// Track cart items to force reactivity when cart updates
+const cartItemsLength = ref(cart.items.length);
+
 const hasItems = computed(() => {
-  console.log('[CheckoutForm] hasItems computed, cart.items.length:', cart.items.length);
-  return cart.items.length > 0;
+  const itemCount = cartItemsLength.value;
+  console.log('[CheckoutForm] hasItems computed, items:', itemCount);
+  return itemCount > 0;
 });
+
+// Watch cart items for changes (for cross-island reactivity)
+watch(
+  () => cart.items.length,
+  (newLength) => {
+    console.log('[CheckoutForm] Detected cart items change:', newLength);
+    cartItemsLength.value = newLength;
+  },
+  { immediate: true }
+);
 
 const handleSubmit = async () => {
   error.value = null;
@@ -246,6 +260,22 @@ onMounted(async () => {
     }
   } catch (e) {
     console.error('[CheckoutForm] Error during mount:', e);
+  }
+
+  // Listen for cart updates from OrderSummary
+  if (typeof window !== 'undefined') {
+    const handleCartUpdate = () => {
+      console.log('[CheckoutForm] Cart updated event received, re-hydrating');
+      if (cart && cart.hydrate) {
+        cart.hydrate();
+      }
+    };
+    window.addEventListener('cart-updated', handleCartUpdate);
+    console.log('[CheckoutForm] Listening for cart-updated events');
+
+    return () => {
+      window.removeEventListener('cart-updated', handleCartUpdate);
+    };
   }
 
   // Lazy load auth store on mount
