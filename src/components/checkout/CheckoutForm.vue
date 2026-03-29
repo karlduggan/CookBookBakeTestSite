@@ -10,17 +10,6 @@
       Cart has {{ cart.items.length }} item(s) - Total: £{{ cart.total.toFixed(2) }}
     </div>
 
-    <!-- Debug: Diagnostic info (remove in production) -->
-    <div class="p-3 bg-gray-500 bg-opacity-10 border border-gray-500 rounded-lg text-gray-600 text-xs space-y-1">
-      <p><strong>DEBUG:</strong></p>
-      <p>cartItemsLength ref: {{ cartItemsLength }}</p>
-      <p>cart.items.length: {{ cart?.items?.length || 0 }}</p>
-      <p>hasItems computed: {{ hasItems }}</p>
-      <p>!hasItems (opposite): {{ !hasItems }}</p>
-      <p>isLoading: {{ isLoading }}</p>
-      <p>Disabled binding (isLoading || !hasItems): {{ isLoading || !hasItems }}</p>
-      <p>cart.total: £{{ cart?.total?.toFixed(2) || '0.00' }}</p>
-    </div>
 
     <!-- Shipping Information -->
     <fieldset>
@@ -144,9 +133,7 @@
     <button
       type="submit"
       :disabled="isLoading || !hasItems"
-      @click="() => console.log('[CheckoutForm Button] Clicked! disabled:', isLoading || !hasItems)"
       class="w-full btn-primary py-3 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-      style="cursor: pointer;"
     >
       <span v-if="isLoading">Processing...</span>
       <span v-else>Proceed to Payment</span>
