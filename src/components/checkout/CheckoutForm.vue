@@ -154,10 +154,10 @@ const form = ref({
 const error = ref<string | null>(null);
 const isLoading = ref(false);
 
-let cart: any = null;
+const cart = useCartStore();
 let auth: any = null;
 
-const hasItems = computed(() => cart?.items?.length > 0);
+const hasItems = computed(() => cart.items.length > 0);
 
 const handleSubmit = async () => {
   error.value = null;
@@ -223,11 +223,9 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
-  // Lazy load stores on mount
-  if (!cart || !auth) {
-    const { useCartStore } = await import('../../stores/cart');
+  // Lazy load auth store on mount
+  if (!auth) {
     const { useAuthStore } = await import('../../stores/auth');
-    cart = useCartStore();
     auth = useAuthStore();
   }
 

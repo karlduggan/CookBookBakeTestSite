@@ -73,20 +73,20 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useCartStore } from '../../stores/cart';
 
 const isMenuOpen = ref(false);
-const isCartOpen = ref(false);
+const cartStore = useCartStore();
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
 const toggleCart = () => {
-  isCartOpen.value = !isCartOpen.value;
+  window.location.href = '/checkout';
 };
 
-// Stub: In production, this would come from the cart store
-const cartCount = computed(() => 0);
+const cartCount = computed(() => cartStore.itemCount);
 </script>
 
 <style scoped>
