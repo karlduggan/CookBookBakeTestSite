@@ -1,12 +1,12 @@
-import { createSupabaseClient } from '../../utils/supabase.js';
-import { authenticateRequest } from '../../utils/auth.js';
-import { successResponse, unauthorizedError, serverError } from '../../utils/response.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
+import { successResponse, unauthorizedError, serverError } from '../../../lib/api-utils/response.js';
 
 // GET /api/admin/analytics - Get sales analytics
 
-export default async (req) => {
+export async function GET(context) {
   try {
-    const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
+    const { isAuthenticated, user, error: authError } = authenticateRequest(context.request.headers);
 
     if (!isAuthenticated || !user) {
       return unauthorizedError('Unauthorized');
@@ -17,28 +17,15 @@ export default async (req) => {
       return forbiddenError('Admin access required');
     }
 
-    if (req.method !== 'GET') {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Method not allowed',
-        }),
-        {
-          status: 405,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
     const supabase = createSupabaseClient();
     const analytics = await getAnalytics(supabase);
 
     return successResponse(analytics);
   } catch (error) {
     console.error('Analytics error:', error);
-    return serverError();
+    return serverError(error);
   }
-};
+}
 
 async function getAnalytics(supabase) {
   // Get total orders
@@ -70,9 +57,11 @@ async function getAnalytics(supabase) {
   const { data: statusCounts } = await supabase.rpc('get_order_status_counts');
 
   // Get top selling books
-  const { data: topBooks } = await supabase.from('order_items').select('book_id, quantity').order('quantity', {
-    ascending: false,
-  }).limit(5);
+  const { data: topBooks } = await supabase
+    .from('order_items')
+    .select('book_id, quantity')
+    .order('quantity', { ascending: false })
+    .limit(5);
 
   // Get recent orders
   const { data: recentOrders } = await supabase

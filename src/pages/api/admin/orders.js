@@ -1,13 +1,21 @@
-import { createSupabaseClient } from '../../utils/supabase.js';
-import { authenticateRequest } from '../../utils/auth.js';
-import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../utils/response.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
+import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../../lib/api-utils/response.js';
 
 // GET /api/admin/orders - Get all orders
 // PUT /api/admin/orders/:id - Update order status
 
-export default async (req) => {
+export async function GET(context) {
+  return handleRequest(context, 'GET');
+}
+
+export async function PUT(context) {
+  return handleRequest(context, 'PUT');
+}
+
+async function handleRequest(context, method) {
   try {
-    const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
+    const { isAuthenticated, user, error: authError } = authenticateRequest(context.request.headers);
 
     if (!isAuthenticated || !user) {
       return unauthorizedError('Unauthorized');
@@ -19,25 +27,25 @@ export default async (req) => {
     }
 
     const supabase = createSupabaseClient();
-    const url = new URL(req.url);
+    const url = new URL(context.request.url);
     const orderId = url.searchParams.get('id');
 
-    if (req.method === 'GET') {
-      return await getAllOrders(req, supabase);
-    } else if (req.method === 'PUT' && orderId) {
-      return await updateOrderStatus(req, supabase, orderId);
+    if (method === 'GET') {
+      return await getAllOrders(context, supabase);
+    } else if (method === 'PUT' && orderId) {
+      return await updateOrderStatus(context, supabase, orderId);
     }
 
-    return errorResponse('Method not allowed', 405);
+    return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
   } catch (error) {
     console.error('Admin orders error:', error);
-    return serverError();
+    return serverError(error);
   }
-};
+}
 
-async function getAllOrders(req, supabase) {
+async function getAllOrders(context, supabase) {
   try {
-    const url = new URL(req.url);
+    const url = new URL(context.request.url);
     const status = url.searchParams.get('status');
     const limit = parseInt(url.searchParams.get('limit') || '50');
     const offset = parseInt(url.searchParams.get('offset') || '0');
@@ -54,9 +62,9 @@ async function getAllOrders(req, supabase) {
         status,
         stripe_payment_intent_id,
         created_at,
-        shippingName,
-        shippingAddressLine1,
-        shippingCity,
+        shipping_name,
+        shipping_address_line1,
+        shipping_city,
         order_items(id, book_id, quantity, price_at_purchase)
       `,
         { count: 'exact' }
@@ -80,13 +88,13 @@ async function getAllOrders(req, supabase) {
     });
   } catch (error) {
     console.error('Get all orders error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
-async function updateOrderStatus(req, supabase, orderId) {
+async function updateOrderStatus(context, supabase, orderId) {
   try {
-    const body = await req.json();
+    const body = await context.request.json();
 
     if (!body.status) {
       return validationError('Status field is required');
@@ -123,7 +131,7 @@ async function updateOrderStatus(req, supabase, orderId) {
     });
   } catch (error) {
     console.error('Update order status error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 

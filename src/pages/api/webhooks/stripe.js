@@ -1,40 +1,31 @@
-import { stripe } from '../utils/stripe.js';
-import { createSupabaseClient } from '../utils/supabase.js';
-import { sendOrderConfirmationEmail } from '../utils/email.js';
+import { stripe } from '../../../lib/api-utils/stripe.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { sendOrderConfirmationEmail } from '../../../lib/api-utils/email.js';
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 
-const handler = async (event) => {
+export async function POST(context) {
   try {
-    if (event.httpMethod !== 'POST') {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ error: 'Method not allowed' }),
-      };
+    const signature = context.request.headers.get('stripe-signature');
+    if (!signature) {
+      return new Response(
+        JSON.stringify({ error: 'Missing Stripe signature' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    const signature = event.headers['stripe-signature'];
-    if (!signature) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing Stripe signature' }),
-      };
-    }
+    const body = await context.request.text();
 
     // Verify webhook signature
     let stripeEvent;
     try {
-      stripeEvent = stripe.webhooks.constructEvent(
-        event.body || '',
-        signature,
-        STRIPE_WEBHOOK_SECRET || ''
-      );
+      stripeEvent = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET || '');
     } catch (error) {
       console.error('Webhook signature verification failed:', error);
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Invalid signature' }),
-      };
+      return new Response(
+        JSON.stringify({ error: 'Invalid signature' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     // Handle checkout.session.completed event
@@ -53,10 +44,10 @@ const handler = async (event) => {
 
       if (existingOrder) {
         console.log('Order already processed for session:', session.id);
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ received: true }),
-        };
+        return new Response(
+          JSON.stringify({ received: true }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
       }
 
       // Generate unique order number
@@ -89,8 +80,8 @@ const handler = async (event) => {
         .from('orders')
         .insert({
           order_number: orderNumber,
-          user_id: userId !== 'guest' ? userId ,
-          guest_email: userId === 'guest' ? email ,
+          user_id: userId !== 'guest' ? userId : null,
+          guest_email: userId === 'guest' ? email : null,
           total_amount: total,
           status: 'payment_received',
           stripe_payment_intent_id: session.payment_intent,
@@ -106,10 +97,10 @@ const handler = async (event) => {
 
       if (orderError || !newOrder) {
         console.error('Failed to create order:', orderError);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: 'Failed to create order' }),
-        };
+        return new Response(
+          JSON.stringify({ error: 'Failed to create order' }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
       }
 
       // Create order items and reduce stock
@@ -192,17 +183,15 @@ const handler = async (event) => {
       console.log('Order created successfully:', orderNumber);
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ received: true }),
-    };
+    return new Response(
+      JSON.stringify({ received: true }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
     console.error('Webhook handler error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Webhook handler failed' }),
-    };
+    return new Response(
+      JSON.stringify({ error: 'Webhook handler failed' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
-};
-
-export { handler };
+}

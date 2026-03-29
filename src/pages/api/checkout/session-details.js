@@ -1,16 +1,10 @@
-import { stripe } from '../utils/stripe.js';
-import { successResponse, validationError, serverError } from '../utils/response.js';
+import { stripe } from '../../../lib/api-utils/stripe.js';
+import { successResponse, validationError, serverError } from '../../../lib/api-utils/response.js';
 
-const handler = async (event) => {
+export async function GET(context) {
   try {
-    if (event.httpMethod !== 'GET') {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ success: false, error: 'Method not allowed' }),
-      };
-    }
-
-    const sessionId = event.queryStringParameters?.session_id;
+    const url = new URL(context.request.url);
+    const sessionId = url.searchParams.get('session_id');
 
     if (!sessionId) {
       return validationError('Missing session_id');
@@ -35,6 +29,4 @@ const handler = async (event) => {
     console.error('Session details error:', error);
     return serverError(error);
   }
-};
-
-export { handler };
+}

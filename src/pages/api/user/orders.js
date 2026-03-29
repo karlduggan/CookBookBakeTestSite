@@ -1,18 +1,11 @@
-import { createSupabaseClient } from '../utils/supabase.js';
-import { successResponse, unauthorizedError, serverError } from '../utils/response.js';
-import { authenticateRequest } from '../utils/auth.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { successResponse, unauthorizedError, serverError } from '../../../lib/api-utils/response.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 
-const handler = async (event) => {
+export async function GET(context) {
   try {
-    if (event.httpMethod !== 'GET') {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ success: false, error: 'Method not allowed' }),
-      };
-    }
-
     // Authenticate request
-    const auth = authenticateRequest(event.headers, string | string[] | undefined>);
+    const auth = authenticateRequest(context.request.headers);
 
     if (!auth.isAuthenticated || !auth.user) {
       return unauthorizedError();
@@ -62,6 +55,4 @@ const handler = async (event) => {
   } catch (error) {
     return serverError(error);
   }
-};
-
-export { handler };
+}

@@ -1,18 +1,11 @@
 import bcrypt from 'bcryptjs';
-import { createSupabaseClient } from '../utils/supabase.js';
-import { successResponse, validationError, serverError, validateRequired, validateEmail } from '../utils/response.js';
-import { generateTokens, setTokenCookie } from '../utils/auth.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { successResponse, validationError, serverError, validateRequired, validateEmail } from '../../../lib/api-utils/response.js';
+import { generateTokens, setTokenCookie } from '../../../lib/api-utils/auth.js';
 
-const handler = async (event) => {
+export async function POST(context) {
   try {
-    if (event.httpMethod !== 'POST') {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ success: false, error: 'Method not allowed' }),
-      };
-    }
-
-    const body = JSON.parse(event.body || '{}');
+    const body = await context.request.json();
 
     // Validate required fields
     const missingField = validateRequired(body, ['email', 'password']);
@@ -52,13 +45,8 @@ const handler = async (event) => {
       isAdmin: user.is_admin,
     });
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Set-Cookie': setTokenCookie(tokens.accessToken),
-      },
-      body: JSON.stringify({
+    return new Response(
+      JSON.stringify({
         success: true,
         data: {
           user: {
@@ -71,10 +59,15 @@ const handler = async (event) => {
           accessToken: tokens.accessToken,
         },
       }),
-    };
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Set-Cookie': setTokenCookie(tokens.accessToken),
+        },
+      }
+    );
   } catch (error) {
     return serverError(error);
   }
-};
-
-export { handler };
+}

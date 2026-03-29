@@ -1,15 +1,31 @@
-import { createSupabaseClient } from '../../utils/supabase.js';
-import { authenticateRequest } from '../../utils/auth.js';
-import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../utils/response.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
+import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../../lib/api-utils/response.js';
 
 // GET /api/admin/categories - Get all categories
 // POST /api/admin/categories - Create category
 // PUT /api/admin/categories/:id - Update category
 // DELETE /api/admin/categories/:id - Delete category
 
-export default async (req) => {
+export async function GET(context) {
+  return handleRequest(context, 'GET');
+}
+
+export async function POST(context) {
+  return handleRequest(context, 'POST');
+}
+
+export async function PUT(context) {
+  return handleRequest(context, 'PUT');
+}
+
+export async function DELETE(context) {
+  return handleRequest(context, 'DELETE');
+}
+
+async function handleRequest(context, method) {
   try {
-    const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
+    const { isAuthenticated, user, error: authError } = authenticateRequest(context.request.headers);
 
     if (!isAuthenticated || !user) {
       return unauthorizedError('Unauthorized');
@@ -21,25 +37,25 @@ export default async (req) => {
     }
 
     const supabase = createSupabaseClient();
-    const url = new URL(req.url);
+    const url = new URL(context.request.url);
     const categoryId = url.searchParams.get('id');
 
-    if (req.method === 'GET') {
+    if (method === 'GET') {
       return await getAllCategories(supabase);
-    } else if (req.method === 'POST') {
-      return await createCategory(req, supabase);
-    } else if (req.method === 'PUT' && categoryId) {
-      return await updateCategory(req, supabase, categoryId);
-    } else if (req.method === 'DELETE' && categoryId) {
+    } else if (method === 'POST') {
+      return await createCategory(context, supabase);
+    } else if (method === 'PUT' && categoryId) {
+      return await updateCategory(context, supabase, categoryId);
+    } else if (method === 'DELETE' && categoryId) {
       return await deleteCategory(supabase, categoryId);
     }
 
-    return errorResponse('Method not allowed', 405);
+    return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
   } catch (error) {
     console.error('Admin categories error:', error);
-    return serverError();
+    return serverError(error);
   }
-};
+}
 
 async function getAllCategories(supabase) {
   try {
@@ -53,13 +69,13 @@ async function getAllCategories(supabase) {
     return successResponse(data);
   } catch (error) {
     console.error('Get all categories error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
-async function createCategory(req, supabase) {
+async function createCategory(context, supabase) {
   try {
-    const body = await req.json();
+    const body = await context.request.json();
 
     if (!body.name || !body.slug) {
       return validationError('Name and slug are required');
@@ -92,13 +108,13 @@ async function createCategory(req, supabase) {
     return successResponse(data, 201);
   } catch (error) {
     console.error('Create category error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
-async function updateCategory(req, supabase, categoryId) {
+async function updateCategory(context, supabase, categoryId) {
   try {
-    const body = await req.json();
+    const body = await context.request.json();
 
     // Check if category exists
     const { data: existing, error: checkError } = await supabase
@@ -129,7 +145,7 @@ async function updateCategory(req, supabase, categoryId) {
     return successResponse(data);
   } catch (error) {
     console.error('Update category error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
@@ -153,7 +169,7 @@ async function deleteCategory(supabase, categoryId) {
       .eq('category_id', categoryId);
 
     if (books && books.length > 0) {
-      return errorResponse('Cannot delete category with associated books', 400);
+      return errorResponse('Cannot delete category with associated books', 'CATEGORY_HAS_BOOKS', 400);
     }
 
     const { error } = await supabase.from('categories').delete().eq('id', categoryId);
@@ -163,7 +179,7 @@ async function deleteCategory(supabase, categoryId) {
     return successResponse({ message: 'Category deleted successfully' });
   } catch (error) {
     console.error('Delete category error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 

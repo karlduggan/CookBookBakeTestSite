@@ -74,7 +74,7 @@ export const sendOrderStatusEmail = async (
   email,
   orderNumber,
   status,
-  trackingUrl?
+  trackingUrl
 ) => {
   console.log('Sending order status email:', {
     to: email,
@@ -91,11 +91,11 @@ export const sendOrderStatusEmail = async (
 /**
  * Generate HTML for order confirmation email
  */
-function generateOrderConfirmationHTML(data): string {
+function generateOrderConfirmationHTML(data) {
   const itemsHTML = data.items
     .map(
       (item) => `
-    
+
       <td style="padding: 10px; border-bottom: 1px solid #ddd;">
         ${item.title}</strong>
         by ${item.author}
@@ -126,14 +126,14 @@ function generateOrderConfirmationHTML(data): string {
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-          
+
             <tr style="background: #004a66;">
               <th style="padding: 10px; text-align: left;">Item</th>
               <th style="padding: 10px; text-align: right;">Qty</th>
               <th style="padding: 10px; text-align: right;">Price</th>
             </tr>
           </thead>
-          
+
             ${itemsHTML}
             <tr style="font-weight: bold; font-size: 16px; border-top: 2px solid #90C2DD;">
               <td colspan="2" style="padding: 15px; text-align: right;">Total:</td>

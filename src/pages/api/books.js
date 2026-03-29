@@ -1,28 +1,11 @@
-import { createSupabaseAnonClient } from './utils/supabase.js';
-import { successResponse, errorResponse, serverError, validationError } from './utils/response.js';
+import { createSupabaseAnonClient } from '../../lib/api-utils/supabase.js';
+import { successResponse, errorResponse, validationError, serverError } from '../../lib/api-utils/response.js';
 
-const handler = async (event) => {
+export async function GET(context) {
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-        body: '',
-      };
-    }
-
-    if (event.httpMethod !== 'GET') {
-      return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
-    }
-
-    const query = event.queryStringParameters;
-    const page = parseInt(query?.page || '1', 10);
-    const limit = Math.min(parseInt(query?.limit || '20', 10), 100);
+    const url = new URL(context.request.url);
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10), 100);
     const offset = (page - 1) * limit;
 
     if (page < 1 || limit < 1) {
@@ -35,21 +18,25 @@ const handler = async (event) => {
       .select('*,categories(id,name,slug)', { count: 'exact' });
 
     // Apply filters
-    if (query?.category) {
-      queryBuilder = queryBuilder.eq('categories.slug', query.category);
+    const category = url.searchParams.get('category');
+    if (category) {
+      queryBuilder = queryBuilder.eq('categories.slug', category);
     }
 
-    if (query?.featured === 'true') {
+    const featured = url.searchParams.get('featured');
+    if (featured === 'true') {
       queryBuilder = queryBuilder.eq('featured', true);
     }
 
-    if (query?.bestseller === 'true') {
+    const bestseller = url.searchParams.get('bestseller');
+    if (bestseller === 'true') {
       queryBuilder = queryBuilder.eq('bestseller', true);
     }
 
     // Search across title, author, and description
-    if (query?.search) {
-      const searchTerm = `%${query.search}%`;
+    const search = url.searchParams.get('search');
+    if (search) {
+      const searchTerm = `%${search}%`;
       queryBuilder = queryBuilder.or(
         `title.ilike.${searchTerm},author.ilike.${searchTerm},description.ilike.${searchTerm}`
       );
@@ -62,7 +49,7 @@ const handler = async (event) => {
 
     if (error) {
       console.error('Database error:', error);
-      return serverError(error.message);
+      return serverError(error);
     }
 
     return successResponse({
@@ -77,6 +64,4 @@ const handler = async (event) => {
   } catch (error) {
     return serverError(error);
   }
-};
-
-export { handler };
+}

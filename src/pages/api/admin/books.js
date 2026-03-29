@@ -1,14 +1,31 @@
-import { createSupabaseClient } from '../../utils/supabase.js';
-import { authenticateRequest } from '../../utils/auth.js';
-import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../utils/response.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
+import { successResponse, errorResponse, validationError, unauthorizedError, notFoundError, serverError } from '../../../lib/api-utils/response.js';
 
+// GET /api/admin/books - Get all books
 // POST /api/admin/books - Create new book
 // PUT /api/admin/books/:id - Update book
 // DELETE /api/admin/books/:id - Delete book
 
-export default async (req) => {
+export async function GET(context) {
+  return handleRequest(context, 'GET');
+}
+
+export async function POST(context) {
+  return handleRequest(context, 'POST');
+}
+
+export async function PUT(context) {
+  return handleRequest(context, 'PUT');
+}
+
+export async function DELETE(context) {
+  return handleRequest(context, 'DELETE');
+}
+
+async function handleRequest(context, method) {
   try {
-    const { isAuthenticated, user, error: authError } = authenticateRequest(req.headers);
+    const { isAuthenticated, user, error: authError } = authenticateRequest(context.request.headers);
 
     if (!isAuthenticated || !user) {
       return unauthorizedError('Unauthorized');
@@ -20,29 +37,29 @@ export default async (req) => {
     }
 
     const supabase = createSupabaseClient();
-    const url = new URL(req.url);
+    const url = new URL(context.request.url);
     const bookId = url.searchParams.get('id');
 
-    if (req.method === 'POST') {
-      return await createBook(req, supabase);
-    } else if (req.method === 'PUT' && bookId) {
-      return await updateBook(req, supabase, bookId);
-    } else if (req.method === 'DELETE' && bookId) {
+    if (method === 'POST') {
+      return await createBook(context, supabase);
+    } else if (method === 'PUT' && bookId) {
+      return await updateBook(context, supabase, bookId);
+    } else if (method === 'DELETE' && bookId) {
       return await deleteBook(supabase, bookId);
-    } else if (req.method === 'GET') {
+    } else if (method === 'GET') {
       return await getAllBooks(supabase);
     }
 
-    return errorResponse('Method not allowed', 405);
+    return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
   } catch (error) {
     console.error('Admin books error:', error);
-    return serverError();
+    return serverError(error);
   }
-};
+}
 
-async function createBook(req, supabase) {
+async function createBook(context, supabase) {
   try {
-    const body = await req.json();
+    const body = await context.request.json();
 
     // Validation
     if (!body.title || !body.author || !body.isbn || !body.price || body.stock_quantity === undefined) {
@@ -75,13 +92,13 @@ async function createBook(req, supabase) {
     return successResponse(data, 201);
   } catch (error) {
     console.error('Create book error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
-async function updateBook(req, supabase, bookId) {
+async function updateBook(context, supabase, bookId) {
   try {
-    const body = await req.json();
+    const body = await context.request.json();
 
     // Validate book exists
     const { data: existingBook, error: fetchError } = await supabase
@@ -127,7 +144,7 @@ async function updateBook(req, supabase, bookId) {
     return successResponse(data);
   } catch (error) {
     console.error('Update book error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
@@ -151,7 +168,7 @@ async function deleteBook(supabase, bookId) {
     return successResponse({ message: 'Book deleted successfully' });
   } catch (error) {
     console.error('Delete book error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 
@@ -167,7 +184,7 @@ async function getAllBooks(supabase) {
     return successResponse(data);
   } catch (error) {
     console.error('Get all books error:', error);
-    return serverError();
+    return serverError(error);
   }
 }
 

@@ -16,14 +16,7 @@ export { stripe };
 /**
  * Create a Stripe Checkout session
  */
-export const createCheckoutSession = async (params: {
-  lineItems;
-  customerEmail?;
-  userId?;
-  successUrl;
-  cancelUrl;
-  metadata?;
-}) => {
+export const createCheckoutSession = async (params) => {
   return stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: params.lineItems,
@@ -45,7 +38,7 @@ export const verifyWebhookSignature = (
   body,
   signature,
   secret
-): Stripe.Event | null => {
+) => {
   try {
     return stripe.webhooks.constructEvent(body, signature, secret);
   } catch (error) {
@@ -64,7 +57,7 @@ export const getCustomer = (customerId) => {
 /**
  * Create or retrieve Stripe customer
  */
-export const getOrCreateCustomer = async (email, customerId?) => {
+export const getOrCreateCustomer = async (email, customerId) => {
   // If we already have a customer ID, retrieve it
   if (customerId) {
     return stripe.customers.retrieve(customerId);

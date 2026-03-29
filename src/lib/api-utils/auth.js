@@ -53,7 +53,7 @@ export const verifyToken = (token) => {
 /**
  * Extract token from Authorization header
  */
-export const extractTokenFromHeader = (authHeader?) => {
+export const extractTokenFromHeader = (authHeader) => {
   if (!authHeader) return null;
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') return null;
@@ -63,7 +63,7 @@ export const extractTokenFromHeader = (authHeader?) => {
 /**
  * Extract JWT from cookies
  */
-export const extractTokenFromCookies = (cookieHeader?) => {
+export const extractTokenFromCookies = (cookieHeader) => {
   if (!cookieHeader) return null;
 
   const cookies = Object.fromEntries(
@@ -79,9 +79,7 @@ export const extractTokenFromCookies = (cookieHeader?) => {
 /**
  * Authenticate request and return user info
  */
-export const authenticateRequest = (
-  headers
-) => {
+export const authenticateRequest = (headers) => {
   const authHeader = headers.authorization;
   const cookieHeader = headers.cookie;
 
@@ -116,7 +114,7 @@ export const setTokenCookie = (
   token,
   httpOnly = true,
   secure = true,
-  sameSite: 'Strict' | 'Lax' | 'None' = 'Lax'
+  sameSite = 'Lax'
 ) => {
   const cookieAttrs = [
     `accessToken=${token}`,

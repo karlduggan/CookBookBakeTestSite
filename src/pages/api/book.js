@@ -1,26 +1,10 @@
-import { createSupabaseAnonClient } from './utils/supabase.js';
-import { successResponse, errorResponse, serverError, notFoundError } from './utils/response.js';
+import { createSupabaseAnonClient } from '../../lib/api-utils/supabase.js';
+import { successResponse, errorResponse, serverError, notFoundError } from '../../lib/api-utils/response.js';
 
-const handler = async (event) => {
+export async function GET(context) {
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-        body: '',
-      };
-    }
-
-    if (event.httpMethod !== 'GET') {
-      return errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED', 405);
-    }
-
-    const bookId = event.queryStringParameters?.id;
+    const url = new URL(context.request.url);
+    const bookId = url.searchParams.get('id');
 
     if (!bookId) {
       return errorResponse('Missing book id', 'MISSING_PARAM', 400);
@@ -60,7 +44,7 @@ const handler = async (event) => {
     const averageRating =
       reviews && reviews.length > 0
         ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-        ;
+        : null;
 
     return successResponse({
       book: {
@@ -73,6 +57,4 @@ const handler = async (event) => {
   } catch (error) {
     return serverError(error);
   }
-};
-
-export { handler };
+}

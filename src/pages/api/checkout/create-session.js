@@ -1,18 +1,11 @@
-import { createSupabaseClient } from '../utils/supabase.js';
-import { stripe } from '../utils/stripe.js';
-import { successResponse, validationError, serverError, unauthorizedError } from '../utils/response.js';
-import { authenticateRequest } from '../utils/auth.js';
+import { createSupabaseClient } from '../../../lib/api-utils/supabase.js';
+import { stripe } from '../../../lib/api-utils/stripe.js';
+import { successResponse, validationError, serverError, unauthorizedError } from '../../../lib/api-utils/response.js';
+import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 
-const handler = async (event) => {
+export async function POST(context) {
   try {
-    if (event.httpMethod !== 'POST') {
-      return {
-        statusCode: 405,
-        body: JSON.stringify({ success: false, error: 'Method not allowed' }),
-      };
-    }
-
-    const body = JSON.parse(event.body || '{}');
+    const body = await context.request.json();
 
     // Validate cart items
     if (!body.items || body.items.length === 0) {
@@ -25,8 +18,8 @@ const handler = async (event) => {
     }
 
     // Authenticate optional (allow guest checkout)
-    const auth = authenticateRequest(event.headers, string | string[] | undefined>);
-    const userId = auth.isAuthenticated ? auth.user?.userId ;
+    const auth = authenticateRequest(context.request.headers);
+    const userId = auth.isAuthenticated ? auth.user?.userId : undefined;
     const email = body.shippingDetails.email;
 
     const supabase = createSupabaseClient();
@@ -130,6 +123,4 @@ const handler = async (event) => {
     console.error('Checkout error:', error);
     return serverError(error);
   }
-};
-
-export { handler };
+}

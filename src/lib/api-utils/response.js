@@ -1,38 +1,33 @@
 
-
 /**
  * Create a successful API response
  */
 export const successResponse = (data, statusCode = 200) => {
-  return {
-    statusCode,
+  return new Response(JSON.stringify({
+    success: true,
+    data,
+  }), {
+    status: statusCode,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
     },
-    body: JSON.stringify({
-      success: true,
-      data,
-    }),
-  };
+  });
 };
 
 /**
  * Create an error API response
  */
 export const errorResponse = (error, code = 'ERROR', statusCode = 400) => {
-  return {
-    statusCode,
+  return new Response(JSON.stringify({
+    success: false,
+    error,
+    code,
+  }), {
+    status: statusCode,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
     },
-    body: JSON.stringify({
-      success: false,
-      error,
-      code,
-    }),
-  };
+  });
 };
 
 /**
