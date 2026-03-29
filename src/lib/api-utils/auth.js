@@ -1,26 +1,30 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
-if (!JWT_SECRET) {
-  console.error('[auth.js] JWT_SECRET not found in environment. Make sure it is set in .env.local');
-  throw new Error('JWT_SECRET environment variable is not set');
+// Lazy load JWT_SECRET to handle environment variable timing issues
+function getJWTSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('[auth.js] JWT_SECRET not found in environment. Make sure it is set in .env.local');
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+  return secret;
 }
 
 /**
  * Generate access token (short-lived)
  */
 export const generateAccessToken = (payload) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+  return jwt.sign(payload, getJWTSecret(), { expiresIn: ACCESS_TOKEN_EXPIRY });
 };
 
 /**
  * Generate refresh token (long-lived)
  */
 export const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY });
+  return jwt.sign(payload, getJWTSecret(), { expiresIn: REFRESH_TOKEN_EXPIRY });
 };
 
 /**
@@ -38,7 +42,7 @@ export const generateTokens = (payload) => {
  */
 export const verifyToken = (token) => {
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, getJWTSecret());
     return {
       isValid: true,
       payload,
