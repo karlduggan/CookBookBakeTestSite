@@ -6,16 +6,24 @@ import { authenticateRequest } from '../../../lib/api-utils/auth.js';
 export const prerender = false;
 
 /**
- * Generate a custom order number
- * Format: ORD-YYYYMMDD-XXXXX (where XXXXX is random 5-digit number)
+ * Generate a user-friendly order number
+ * Format: ORD-MMDD-XXXXX (e.g., ORD-0329-AB12C)
+ * Uses month/day + base36 encoded random for short, memorable format
  */
 function generateOrderNumber() {
   const now = new Date();
-  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-  const randomNum = Math.floor(Math.random() * 100000)
-    .toString()
-    .padStart(5, '0');
-  return `ORD-${dateStr}-${randomNum}`;
+
+  // Month and day (e.g., "0329" for March 29)
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const dateStr = `${month}${day}`;
+
+  // Generate a random number and convert to base36 (0-9, a-z)
+  // This makes it shorter and more interesting than pure numbers
+  const randomNum = Math.floor(Math.random() * 60466176); // 36^5
+  const randomStr = randomNum.toString(36).toUpperCase().padStart(5, '0');
+
+  return `ORD-${dateStr}-${randomStr}`;
 }
 
 export async function POST(context) {
