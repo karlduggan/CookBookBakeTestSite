@@ -136,13 +136,40 @@ export async function POST(context) {
       shipping_country: metadata.shippingCountry || 'United Kingdom',
     };
 
-    console.log('[save-order] Inserting order data:', JSON.stringify(orderData, null, 2));
+
+    // Calculate subtotal, shipping, and tax from session
+    const subtotal = (session.amount_total || 0) / 100;
+    const shippingAmount = parseFloat(metadata.shippingCost || 0);
+    const taxAmount = parseFloat(metadata.taxAmount || 0);
+
+    // Build order data matching actual database schema
+    const dbOrderData = {
+      order_number: orderNumber,
+      user_id: userId || null,
+      status: 'pending',
+      subtotal: subtotal,
+      shipping: shippingAmount,
+      tax: taxAmount,
+      total: subtotal + shippingAmount + taxAmount,
+      payment_status: session.payment_status || 'unpaid',
+      stripe_session_id: sessionId,
+      shipping_name: metadata.shippingName,
+      shipping_email: session.customer_email || metadata.email,
+      shipping_address_line1: metadata.shippingAddressLine1,
+      shipping_address_line2: metadata.shippingAddressLine2 || null,
+      shipping_city: metadata.shippingCity,
+      shipping_postcode: metadata.shippingPostcode,
+      shipping_country: metadata.shippingCountry || 'United Kingdom',
+      metadata: metadata,
+    };
+
+    console.log('[save-order] Database order data:', JSON.stringify(dbOrderData, null, 2));
 
     // Try to save to database, but don't fail if it doesn't work
     try {
       const { data: order, error: insertError } = await supabase
         .from('orders')
-        .insert([orderData])
+        .insert([dbOrderData])
         .select()
         .single();
 
