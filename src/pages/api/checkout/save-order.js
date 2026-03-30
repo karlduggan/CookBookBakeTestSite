@@ -120,27 +120,11 @@ export async function POST(context) {
       return validationError('Missing shipping details in session metadata');
     }
 
-    // Create order in database
-    const orderData = {
-      order_number: orderNumber,
-      user_id: userId || null,
-      guest_email: session.customer_email || metadata.email,
-      total_amount: (session.amount_total || 0) / 100, // Convert from cents to pounds
-      status: session.payment_status === 'paid' ? 'payment_received' : 'pending',
-      stripe_payment_intent_id: sessionId,
-      shipping_name: metadata.shippingName,
-      shipping_address_line1: metadata.shippingAddressLine1,
-      shipping_address_line2: metadata.shippingAddressLine2 || null,
-      shipping_city: metadata.shippingCity,
-      shipping_postcode: metadata.shippingPostcode,
-      shipping_country: metadata.shippingCountry || 'United Kingdom',
-    };
-
-
-    // Calculate subtotal, shipping, and tax from session
-    const subtotal = (session.amount_total || 0) / 100;
+    // Use values from metadata (already calculated in create-session)
+    const subtotal = parseFloat(metadata.subtotal || 0);
     const shippingAmount = parseFloat(metadata.shippingCost || 0);
     const taxAmount = parseFloat(metadata.taxAmount || 0);
+    const totalAmount = parseFloat(metadata.totalAmount || (subtotal + shippingAmount + taxAmount));
 
     // Build order data matching actual database schema
     const dbOrderData = {
@@ -150,8 +134,8 @@ export async function POST(context) {
       subtotal: subtotal,
       shipping: shippingAmount,
       tax: taxAmount,
-      total: subtotal + shippingAmount + taxAmount,
-      payment_status: session.payment_status || 'unpaid',
+      total: totalAmount,
+      payment_status: session.payment_status === 'paid' ? 'paid' : 'unpaid',
       stripe_session_id: sessionId,
       shipping_name: metadata.shippingName,
       shipping_email: session.customer_email || metadata.email,
